@@ -1,0 +1,25 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Tools
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Generated reports (tess-verifier check --out reports)
+reports/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,45 @@
+[project]
+name = "tess-verifier"
+version = "0.1.0"
+description = "AI agent that checks whether a TESS candidate (TOI) looks like a planet or a false positive."
+readme = "README.md"
+authors = [
+    { name = "Igor Kowalik" },
+    { name = "Wiktor Szymonek" },
+    { name = "Aleksander Sergiej" },
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic-ai-slim[anthropic,google,openai]>=2.66.0",
+    "pydantic-settings>=2.16.2",
+    "python-dotenv>=1.2.4",
+    "rich>=15.0.0",
+    "typer>=0.27.3",
+]
+
+[project.scripts]
+tess-verifier = "tess_verifier.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    # Raised inside pydantic_graph when Agent.run_sync starts its event loop, not by our code.
+    "ignore:There is no current event loop:DeprecationWarning",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
+]
