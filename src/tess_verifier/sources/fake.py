@@ -31,6 +31,7 @@ from tess_verifier.sources.base import (
 
 PAPER_ARCHIVE_NAME = "Paper archive (NASA ADS / arXiv)"
 STAR_CATALOG_NAME = "Star catalog (TIC at MAST)"
+LIGHT_CURVE_ARCHIVE_NAME = "Light-curve archive (TESS data at MAST)"
 
 
 def load_fixtures() -> dict[str, Any]:
@@ -110,13 +111,17 @@ class FixtureSources:
         ]
 
     def transit_metrics(self, candidate: CatalogEntry) -> TransitMetrics | None:
-        metrics = self._raw(candidate.toi)["transit_metrics"]
+        raw = self._raw(candidate.toi)
+        self._check_reachable(raw, "light_curves", LIGHT_CURVE_ARCHIVE_NAME)
+        metrics = raw["transit_metrics"]
         if metrics is None:
             return None
         return TransitMetrics(**metrics, source=self._sources["light_curves"])
 
     def centroid(self, candidate: CatalogEntry) -> CentroidMeasurement | None:
-        centroid = self._raw(candidate.toi)["centroid"]
+        raw = self._raw(candidate.toi)
+        self._check_reachable(raw, "light_curves", LIGHT_CURVE_ARCHIVE_NAME)
+        centroid = raw["centroid"]
         if centroid is None:
             return None
         return CentroidMeasurement(**centroid, source=self._sources["light_curves"])

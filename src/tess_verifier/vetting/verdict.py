@@ -23,6 +23,10 @@ CAUSES = {
 }
 """FR-12: the likely cause when a check fails."""
 
+FAILURE_PRIORITY = (Check.CENTROID, Check.ODD_EVEN, Check.SECONDARY_ECLIPSE, Check.COMPANION_SIZE)
+"""When several tests fail, the cause and the main reason come from the first of them in this
+order, not from the order the tests ran in, so repeated checks give the same report (NFR-03)."""
+
 NEARBY_ECLIPSING_BINARY = (
     "a nearby eclipsing binary (another star in the same pixels is a pair of stars eclipsing "
     "each other)"
@@ -58,6 +62,8 @@ class Decision:
     template_reason: str
     """One-sentence main reason built without the LLM (FR-10)."""
     cause: str | None = None
+    failed: list[Check] = field(default_factory=list)
+    """Failed checks, in FAILURE_PRIORITY order."""
     settle_by: list[str] = field(default_factory=list)
     not_run: list[Check] = field(default_factory=list)
     """Required checks that have no result yet."""
@@ -69,21 +75,26 @@ def decide(results: list[CheckResult], required: list[Check]) -> Decision:
     by_check = {r.check: r for r in results}
     not_run = [c for c in required if c not in by_check]
 
-    failed = [r for r in results if r.status is CheckStatus.FAILED]
+    failed = sorted(
+        (r for r in results if r.status is CheckStatus.FAILED),
+        key=lambda r: FAILURE_PRIORITY.index(r.check),
+    )
     if failed:
         first = failed[0]
         failed_checks = {r.check for r in failed}
         if Check.CENTROID in failed_checks and failed_checks & set(ECLIPSING_BINARY_CHECKS):
             cause = NEARBY_ECLIPSING_BINARY
-        elif Check.CENTROID in failed_checks:
-            cause = CAUSES[Check.CENTROID]
         else:
             cause = CAUSES[first.check]
         reason = f"The {first.check.label.lower()} failed: {_lower_first(first.finding)}"
+        if len(failed) > 1:
+            others = _join([r.check.label.lower() for r in failed[1:]])
+            reason = f"{reason.rstrip('.')}; the {others} failed too."
         return Decision(
             verdict=Verdict.FALSE_POSITIVE,
             template_reason=reason,
             cause=cause,
+            failed=[r.check for r in failed],
             not_run=not_run,
         )
 

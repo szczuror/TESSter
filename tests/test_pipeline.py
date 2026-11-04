@@ -4,14 +4,22 @@ import pytest
 
 from tess_verifier.models import Check, CheckStatus, NotChecked, Report, Verdict
 from tess_verifier.pipeline import check_candidate, check_many
-from tess_verifier.sources import DataSources, SourceUnavailableError
-from tess_verifier.sources.fake import FixtureSources
+from tess_verifier.sources import DataSources
+from tess_verifier.sources.fake import FixtureSources, load_fixtures
 
 
 def offline(toi: str, sources, settings, **kwargs) -> Report:
     outcome = check_candidate(toi, sources=sources, settings=settings, offline=True, **kwargs)
     assert isinstance(outcome, Report), outcome
     return outcome
+
+
+def with_outage(toi: str, source: str) -> DataSources:
+    """Placeholder data in which one source cannot be reached for one candidate."""
+    data = load_fixtures()
+    next(c for c in data["candidates"] if c["toi"] == toi)["unavailable"].append(source)
+    fixtures = FixtureSources(data)
+    return DataSources(fixtures, fixtures, fixtures, fixtures, placeholder=True)
 
 
 @pytest.mark.parametrize(
@@ -78,18 +86,26 @@ def test_blind_test_hides_catalog_status_and_papers(sources, settings):
 
 
 def test_unreachable_star_catalog_makes_centroid_required(settings):
-    class NoStarCatalog(FixtureSources):
-        def stars_near(self, candidate, radius_arcmin):
-            raise SourceUnavailableError("Star catalog", "test outage")
-
-    fixtures = NoStarCatalog()
-    sources = DataSources(fixtures, fixtures, fixtures, fixtures, placeholder=True)
-
-    report = offline("TOI-90001.01", sources, settings)
+    report = offline("TOI-90001.01", with_outage("TOI-90001.01", "stars"), settings)
     assert report.neighbors is None
     assert report.checks[0].check is Check.CENTROID
-    assert report.checks[0].status is CheckStatus.PASSED
+    assert report.checks[0].status is CheckStatus.PASSED  # 0.4 +/- 0.5 arcsec is precise enough
     assert any("Star catalog" in p for p in report.problems)
+
+
+def test_unreachable_star_catalog_needs_a_precise_centroid(settings):
+    # 3.0 +/- 9.0 arcsec cannot rule out a bright star one TESS pixel away.
+    report = offline("TOI-90004.01", with_outage("TOI-90004.01", "stars"), settings)
+    assert report.checks[0].status is CheckStatus.UNCLEAR
+    assert report.verdict is Verdict.INCONCLUSIVE
+
+
+def test_unreachable_light_curve_archive_skips_its_tests_and_check_continues(settings):
+    report = offline("TOI-90002.01", with_outage("TOI-90002.01", "light_curves"), settings)
+    skipped = {r.check for r in report.checks if "could not be reached" in r.finding}
+    assert skipped == {Check.ODD_EVEN, Check.SECONDARY_ECLIPSE}
+    assert any("Light-curve archive" in p for p in report.problems)
+    assert report.verdict is Verdict.INCONCLUSIVE
 
 
 def test_batch_lists_likely_planets_first_and_unchecked_last(sources, settings):

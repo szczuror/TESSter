@@ -65,7 +65,9 @@ def check(
     chat: Annotated[
         bool,
         typer.Option(
-            "--chat", help="Ask follow-up questions after the report (one TOI, needs an LLM)."
+            "--chat",
+            help="Ask follow-up questions after the report (one TOI, needs an LLM, "
+            "not with --blind).",
         ),
     ] = False,
     verbose: Annotated[
@@ -78,6 +80,12 @@ def check(
         settings = settings.model_copy(update={"model": model})
     if chat and (offline or len(tois) != 1):
         err_console.print("[red]--chat needs exactly one TOI and an LLM (no --offline).[/red]")
+        raise typer.Exit(2)
+    if chat and blind:
+        err_console.print(
+            "[red]--chat does not work with --blind: the follow-up questions would show the "
+            "model the candidate's name.[/red]"
+        )
         raise typer.Exit(2)
 
     sources = build_sources(settings.data)
@@ -109,6 +117,10 @@ def check(
             console.print(render_trace(report), highlight=False, markup=False)
     if out:
         _save(out, outcomes, reports)
+    if not reports:
+        # UC-03 1a: none of the inputs could be checked.
+        err_console.print("[red]None of the inputs could be checked.[/red]")
+        raise typer.Exit(1)
     if chat:
         _chat(reports[0], settings)
 

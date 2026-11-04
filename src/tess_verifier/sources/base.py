@@ -60,11 +60,13 @@ class StarCatalog(Protocol):
 
 class LightCurveArchive(Protocol):
     def transit_metrics(self, candidate: CatalogEntry) -> TransitMetrics | None:
-        """Return depths measured from the light curve, or None if there is no light curve."""
+        """Return depths measured from the light curve, None if there is no light curve, or
+        raise SourceUnavailableError."""
         ...
 
     def centroid(self, candidate: CatalogEntry) -> CentroidMeasurement | None:
-        """Return the centroid shift during the dip, or None if there are no pixel data."""
+        """Return the centroid shift during the dip, None if there are no pixel data, or raise
+        SourceUnavailableError."""
         ...
 
 

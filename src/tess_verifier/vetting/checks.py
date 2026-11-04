@@ -16,6 +16,7 @@ from tess_verifier.models import (
     CheckStatus,
     NearbyStar,
     NeighborAssessment,
+    Source,
     TransitMetrics,
 )
 
@@ -33,7 +34,15 @@ MAX_PLANET_RADIUS_EARTH = 2 * EARTH_RADII_PER_JUPITER_RADIUS
 CENTROID_PRECISION_FRACTION = 1 / 3
 """The centroid must be measured to better than this fraction of the distance to the neighbor."""
 
+TESS_PIXEL_ARCSEC = 21.0
+"""Size of one TESS pixel on the sky. When the star catalog cannot be reached, a star bright
+enough to cause the dip may lie as close as one pixel."""
+
 NO_LIGHT_CURVE = "No light-curve measurements are available for this candidate."
+
+NO_USABLE_ERROR = (
+    "The measurement has no usable error (zero or missing), so its significance cannot be judged."
+)
 
 
 def max_depth_if_eclipsed_ppm(target_tmag: float, star_tmag: float) -> float:
@@ -62,16 +71,51 @@ def assess_neighbors(candidate: CatalogEntry, stars: list[NearbyStar]) -> list[N
     return assessments
 
 
-def _significance(value: float, error: float) -> float:
-    return abs(value) / error if error > 0 else math.inf
+def _significance(value: float, error: float) -> float | None:
+    """How many standard deviations the value lies from zero, or None if the error is not usable.
+
+    An error of zero, below zero or NaN means the error is missing, not that the measurement is
+    perfect, so it must not count as an infinitely significant result.
+    """
+    if not (math.isfinite(value) and math.isfinite(error)) or error <= 0:
+        return None
+    return abs(value) / error
+
+
+def _without_usable_error(check: Check, reason: str, sources: list[Source]) -> CheckResult:
+    return CheckResult(
+        check=check,
+        status=CheckStatus.UNCLEAR,
+        reason=reason,
+        finding=NO_USABLE_ERROR,
+        sources=sources,
+    )
+
+
+def _closest_possible_neighbor(
+    bright_neighbors: list[NeighborAssessment] | None,
+) -> tuple[float, str] | None:
+    """Separation and description of the closest star that could cause the dip, if any."""
+    if bright_neighbors is None:
+        return TESS_PIXEL_ARCSEC, (
+            f"a star one TESS pixel ({TESS_PIXEL_ARCSEC:.0f} arcsec) away, which cannot be "
+            "ruled out because the star catalog could not be reached"
+        )
+    if not bright_neighbors:
+        return None
+    closest = min(n.star.separation_arcsec for n in bright_neighbors)
+    return closest, f"a star {closest:.0f} arcsec away"
 
 
 def centroid_check(
     measurement: CentroidMeasurement | None,
-    bright_neighbors: list[NeighborAssessment],
+    bright_neighbors: list[NeighborAssessment] | None,
     reason: str,
 ) -> CheckResult:
-    """Does the light-weighted centre of the image move during the dip?"""
+    """Does the light-weighted centre of the image move during the dip?
+
+    ``bright_neighbors`` is None when the star catalog could not be reached (FR-07).
+    """
     if measurement is None:
         return CheckResult(
             check=Check.CENTROID,
@@ -83,6 +127,8 @@ def centroid_check(
     offset, err = measurement.offset_arcsec, measurement.offset_err_arcsec
     sigma = _significance(offset, err)
     sources = [measurement.source]
+    if sigma is None:
+        return _without_usable_error(Check.CENTROID, reason, sources)
     if sigma >= SIGMA_LIMIT:
         return CheckResult(
             check=Check.CENTROID,
@@ -92,16 +138,16 @@ def centroid_check(
             f"({sigma:.1f} sigma), so the dip most likely comes from a nearby star.",
             sources=sources,
         )
-    if bright_neighbors:
-        closest = min(n.star.separation_arcsec for n in bright_neighbors)
-        if err > closest * CENTROID_PRECISION_FRACTION:
+    neighbor = _closest_possible_neighbor(bright_neighbors)
+    if neighbor is not None:
+        separation, star = neighbor
+        if err > separation * CENTROID_PRECISION_FRACTION:
             return CheckResult(
                 check=Check.CENTROID,
                 status=CheckStatus.UNCLEAR,
                 reason=reason,
                 finding=f"No shift is seen, but the light centre is measured only to "
-                f"+/-{err:.1f} arcsec, too coarse to tell the target from a star "
-                f"{closest:.0f} arcsec away.",
+                f"+/-{err:.1f} arcsec, too coarse to tell the target from {star}.",
                 sources=sources,
             )
     return CheckResult(
@@ -132,6 +178,8 @@ def odd_even_check(metrics: TransitMetrics | None, reason: str) -> CheckResult:
         )
     diff = metrics.odd_depth_ppm - metrics.even_depth_ppm
     sigma = _significance(diff, math.hypot(metrics.odd_depth_err_ppm, metrics.even_depth_err_ppm))
+    if sigma is None:
+        return _without_usable_error(Check.ODD_EVEN, reason, sources)
     if sigma >= SIGMA_LIMIT:
         return CheckResult(
             check=Check.ODD_EVEN,
@@ -162,6 +210,8 @@ def secondary_eclipse_check(metrics: TransitMetrics | None, reason: str) -> Chec
     depth, err = metrics.secondary_depth_ppm, metrics.secondary_depth_err_ppm
     sigma = _significance(depth, err)
     sources = [metrics.source]
+    if sigma is None:
+        return _without_usable_error(Check.SECONDARY_ECLIPSE, reason, sources)
     if depth > 0 and sigma >= SIGMA_LIMIT:
         return CheckResult(
             check=Check.SECONDARY_ECLIPSE,

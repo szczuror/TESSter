@@ -7,6 +7,7 @@ naming who called it, which ``--verbose`` shows.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import assert_never
 
@@ -31,6 +32,39 @@ SAFETY_NET = "safety net"
 
 class StepError(Exception):
     """A step was called at the wrong time or with bad input. The message says what to do."""
+
+
+MAX_SENTENCE_CHARS = 400
+"""Longest sentence the LLM may write into the report."""
+
+_LINK_OR_MARKUP = re.compile(r"https?://|www\.|[\[\]<>`]")
+
+
+def sentence_problem(text: str) -> str | None:
+    """Why a sentence the LLM wrote cannot go into the report, or None if it can.
+
+    The main reason (FR-10), the reasons for running or skipping tests and the paper notes are
+    shown as the model wrote them. They must be one plain line, because the report links only
+    to the data sources (FR-14, NFR-02), never to links or formatting the model made up.
+    """
+    text = text.strip()
+    if not text:
+        return "it is empty"
+    if "\n" in text or "\r" in text:
+        return "it has more than one line"
+    if len(text) > MAX_SENTENCE_CHARS:
+        return f"it is longer than {MAX_SENTENCE_CHARS} characters"
+    if _LINK_OR_MARKUP.search(text):
+        return "it contains a link or one of the characters [ ] < > `"
+    return None
+
+
+def _require_plain(text: str, what: str) -> None:
+    if problem := sentence_problem(text):
+        raise StepError(
+            f"The {what} cannot be used: {problem}. Write one plain sentence of at most "
+            f"{MAX_SENTENCE_CHARS} characters, without links, Markdown or line breaks."
+        )
 
 
 @dataclass
@@ -114,8 +148,9 @@ def classify_paper(
     if match is None:
         known = ", ".join(p.paper.id for p in papers) or "none"
         raise StepError(f"There is no paper with id '{paper_id}'. Known paper ids: {known}.")
+    _require_plain(note, "justification")
     match.stance = stance
-    match.note = note
+    match.note = note.strip()
     inv.log(actor, f"classify_paper({paper_id}) -> {stance.value}")
     return match
 
@@ -155,7 +190,8 @@ def run_check(
 ) -> CheckResult:
     """UC-01 steps 5-6. Running a check twice returns the first result.
 
-    Raises StepError when FR-07 says another step must come first.
+    Raises StepError when FR-07 says another step must come first, or when the reason is not
+    one plain sentence.
     """
     if existing := inv.result_for(check):
         return existing
@@ -173,22 +209,18 @@ def run_check(
             "Run the centroid test first: a star bright enough to cause the dip may lie "
             "within 2.5 arcmin, so we must first check which star the dip comes from (FR-07)."
         )
-    entry = inv.entry
-    match check:
-        case Check.CENTROID:
-            result = checks.centroid_check(
-                sources.light_curves.centroid(entry), inv.bright_neighbors, reason
-            )
-        case Check.ODD_EVEN:
-            result = checks.odd_even_check(sources.light_curves.transit_metrics(entry), reason)
-        case Check.SECONDARY_ECLIPSE:
-            result = checks.secondary_eclipse_check(
-                sources.light_curves.transit_metrics(entry), reason
-            )
-        case Check.COMPANION_SIZE:
-            result = checks.companion_size_check(entry, reason)
-        case _:
-            assert_never(check)
+    _require_plain(reason, "reason")
+    reason = reason.strip()
+    try:
+        result = _measure(inv, sources, check, reason)
+    except SourceUnavailableError as exc:
+        # UC-01 *a: the check goes on, and the report says why this test could not run.
+        result = CheckResult(
+            check=check,
+            status=CheckStatus.SKIPPED,
+            reason=reason,
+            finding=f"{exc}, so the test could not run.",
+        )
     if actor == SAFETY_NET:
         result = result.model_copy(update={"auto_run": True})
     if result.status is CheckStatus.SKIPPED and check in inv.required:
@@ -196,6 +228,26 @@ def run_check(
     inv.results.append(result)
     inv.log(actor, f"run_check({check.value}) -> {result.status.value}")
     return result
+
+
+def _measure(inv: Investigation, sources: DataSources, check: Check, reason: str) -> CheckResult:
+    """Run one check on the data. Raises SourceUnavailableError if the light curves are out."""
+    entry = inv.entry
+    match check:
+        case Check.CENTROID:
+            # None tells the test that the star catalog could not be reached.
+            neighbors = None if inv.neighbors is None else inv.bright_neighbors
+            return checks.centroid_check(sources.light_curves.centroid(entry), neighbors, reason)
+        case Check.ODD_EVEN:
+            return checks.odd_even_check(sources.light_curves.transit_metrics(entry), reason)
+        case Check.SECONDARY_ECLIPSE:
+            return checks.secondary_eclipse_check(
+                sources.light_curves.transit_metrics(entry), reason
+            )
+        case Check.COMPANION_SIZE:
+            return checks.companion_size_check(entry, reason)
+        case _:
+            assert_never(check)
 
 
 def skip_check(
@@ -209,7 +261,10 @@ def skip_check(
             f"The {check.label.lower()} is required for this candidate and cannot be skipped. "
             "Run it; if its data are missing, it is recorded as skipped automatically."
         )
-    result = CheckResult(check=check, status=CheckStatus.SKIPPED, reason=reason, finding="Not run.")
+    _require_plain(reason, "reason")
+    result = CheckResult(
+        check=check, status=CheckStatus.SKIPPED, reason=reason.strip(), finding="Not run."
+    )
     inv.results.append(result)
     inv.log(actor, f"skip_check({check.value})")
     return result

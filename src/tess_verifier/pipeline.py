@@ -169,19 +169,28 @@ def _orchestrate(
 
 
 def _main_reason(inv: Investigation, decision: Decision, agent_reason: str | None) -> str:
-    """The agent's sentence, unless the verdict or the results changed after the agent saw them."""
+    """The agent's sentence, unless the verdict or the results changed after the agent saw them,
+    or the sentence is not one plain line (FR-10)."""
     if agent_reason is None:
         return decision.template_reason
     if not agent_reason:
         inv.notes.append("The agent gave no main reason, so it comes from a template.")
         return decision.template_reason
-    if inv.verdict_seen is decision.verdict and inv.checks_when_verdict_seen == len(inv.results):
-        return agent_reason
-    inv.notes.append(
-        "The main reason comes from a template, because the verdict or the tests changed after "
-        "the agent last saw them."
-    )
-    return decision.template_reason
+    same_verdict = inv.verdict_seen is decision.verdict
+    same_tests = inv.checks_when_verdict_seen == len(inv.results)
+    if not (same_verdict and same_tests):
+        inv.notes.append(
+            "The main reason comes from a template, because the verdict or the tests changed "
+            "after the agent last saw them."
+        )
+        return decision.template_reason
+    if problem := steps.sentence_problem(agent_reason):
+        inv.notes.append(
+            "The main reason comes from a template, because the agent's sentence could not be "
+            f"used: {problem}."
+        )
+        return decision.template_reason
+    return agent_reason
 
 
 def _centroid_reason(inv: Investigation) -> str:

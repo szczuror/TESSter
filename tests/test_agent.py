@@ -1,7 +1,7 @@
 """The agent's tools and rules, driven by a scripted fake model (no network, no API key)."""
 
 import pytest
-from pydantic_ai import UnexpectedModelBehavior
+from pydantic_ai import ModelAuthenticationError, UnexpectedModelBehavior
 from pydantic_ai.messages import ModelMessage, ModelResponse, TextPart, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 
@@ -128,6 +128,84 @@ def test_unknown_paper_id_is_sent_back_to_the_model(sources, settings):
     assert report.papers[0].stance is PaperStance.MENTIONS
 
 
+def test_paper_note_with_a_link_is_sent_back_to_the_model(sources, settings):
+    paper = "placeholder-2025-017"
+    script = Script(
+        [("search_papers", {})],
+        [
+            (
+                "classify_paper",
+                {
+                    "paper_id": paper,
+                    "stance": "mentions",
+                    "justification": "Listed at https://example.org/list.",
+                },
+            )
+        ],
+        [
+            (
+                "classify_paper",
+                {
+                    "paper_id": paper,
+                    "stance": "mentions",
+                    "justification": "It only lists the candidate in a catalogue.",
+                },
+            )
+        ],
+        "Done.",
+    )
+    report = run_agent(script, "TOI-90001.01", sources, settings)
+
+    assert "The justification cannot be used" in script.sent_text()
+    assert report.papers[0].note == "It only lists the candidate in a catalogue."
+
+
+@pytest.mark.parametrize(
+    ("text", "usable"),
+    [
+        ("The light centre stays in place, so the dip comes from the target star.", True),
+        ("First line.\nSecond line.", False),
+        ("See https://example.org for the discovery.", False),
+        ("See [the discovery paper](x) for details.", False),
+        ("A sentence with `code` in it.", False),
+        ("A sentence with <b>HTML</b> in it.", False),
+        ("x" * 401, False),
+        ("   ", False),
+    ],
+)
+def test_llm_text_must_be_one_plain_sentence(text, usable):
+    assert (steps.sentence_problem(text) is None) is usable
+
+
+def test_agent_sentence_with_a_link_is_replaced_by_the_template(sources, settings):
+    script = Script(
+        [("find_nearby_stars", {})],
+        [call("odd_even_depth"), call("secondary_eclipse"), call("companion_size")],
+        [("get_verdict", {})],
+        "Confirmed planet, see [the discovery paper](https://example.org/x).",
+    )
+    report = run_agent(script, "TOI-90001.01", sources, settings)
+
+    assert report.main_reason.startswith("Every required test passed")
+    assert any("could not be used" in n for n in report.notes)
+
+
+def test_agent_is_asked_to_name_every_failed_test(sources, settings):
+    sentence = "The odd-even depth and secondary eclipse tests both show two stars eclipsing."
+    script = Script(
+        [("find_nearby_stars", {})],
+        [call("odd_even_depth"), call("secondary_eclipse"), call("companion_size")],
+        [("get_verdict", {})],
+        sentence,
+    )
+    report = run_agent(script, "TOI-90002.01", sources, settings)
+
+    assert "Name every failed test" in script.sent_text()
+    assert "Secondary eclipse test" in script.sent_text()  # names a student can read, not ids
+    assert report.verdict is Verdict.FALSE_POSITIVE
+    assert report.main_reason == sentence
+
+
 def test_required_test_cannot_be_skipped(sources, settings):
     script = Script(
         [("find_nearby_stars", {})],
@@ -155,6 +233,15 @@ def test_unknown_model_is_a_configuration_error(sources):
         check_candidate("TOI-90001.01", sources=sources, settings=Settings(model="nosuch:model"))
 
 
+def test_rejected_api_key_is_a_configuration_error(sources, settings):
+    script = Script(ModelAuthenticationError(model_name="test", message="invalid API key"))
+    with (
+        verifier_agent.override(model=FunctionModel(script)),
+        pytest.raises(ConfigurationError, match="invalid API key"),
+    ):
+        check_candidate("TOI-90001.01", sources=sources, settings=settings)
+
+
 def test_prompt_gives_the_candidate_data(sources):
     inv = Investigation(toi=parse_toi("TOI-90003.01"))
     steps.load_candidate(inv, sources)
@@ -172,6 +259,24 @@ def test_blind_prompt_hides_names_and_catalog_status(sources):
     assert "TIC" not in prompt
     assert "false positive" not in prompt
     assert "blind test" in prompt
+
+
+def test_blind_agent_run_shows_the_model_no_names_or_papers(sources, settings):
+    script = Script(
+        [("search_papers", {})],
+        [("find_nearby_stars", {})],
+        [call("odd_even_depth"), call("secondary_eclipse"), call("companion_size")],
+        [("get_verdict", {})],
+        "No test found a sign of two eclipsing stars, so this looks like a planet.",
+    )
+    with verifier_agent.override(model=FunctionModel(script)):
+        report = check_candidate("TOI-90005.01", sources=sources, settings=settings, blind=True)
+
+    sent = script.sent_text()
+    assert "Papers are hidden in a blind test." in sent
+    for hidden in ("90005", "900000005", "placeholder-2026-008", "Radial velocities"):
+        assert hidden not in sent  # the name, the TIC number and the paper
+    assert report.verdict is Verdict.LIKELY_PLANET
 
 
 def test_followup_answers_from_the_report_without_paper_abstracts(sources, settings):

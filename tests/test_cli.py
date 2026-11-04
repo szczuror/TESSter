@@ -37,6 +37,18 @@ def test_chat_needs_one_toi_and_an_llm():
     assert result.exit_code == 2
 
 
+def test_chat_is_refused_in_a_blind_test():
+    result = runner.invoke(app, ["check", "TOI-90001.01", "--blind", "--chat"])
+    assert result.exit_code == 2
+    assert "does not work with --blind" in result.output
+
+
+def test_batch_without_a_valid_toi_fails():
+    result = runner.invoke(app, ["check", "TOI-abc", "TOI-90009.01", "--offline"])
+    assert result.exit_code == 1
+    assert "None of the inputs could be checked" in result.output
+
+
 def test_missing_llm_setup_is_explained():
     result = runner.invoke(app, ["check", "TOI-90001.01"])
     assert result.exit_code == 2

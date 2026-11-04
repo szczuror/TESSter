@@ -90,3 +90,15 @@ class TestCause:
     def test_template_reason_names_the_failed_test(self):
         decision = decide([result(Check.ODD_EVEN, F)], EB_ONLY)
         assert decision.template_reason == "The odd-even depth test failed: finding text."
+
+    def test_cause_and_reason_do_not_depend_on_the_order_the_tests_ran_in(self):
+        odd_even, size = result(Check.ODD_EVEN, F), result(Check.COMPANION_SIZE, F)
+        assert decide([odd_even, size], EB_ONLY) == decide([size, odd_even], EB_ONLY)
+        assert decide([size, odd_even], EB_ONLY).cause == CAUSES[Check.ODD_EVEN]
+
+    def test_template_reason_names_every_failed_test(self):
+        decision = decide([result(Check.COMPANION_SIZE, F), result(Check.ODD_EVEN, F)], EB_ONLY)
+        assert decision.failed == [Check.ODD_EVEN, Check.COMPANION_SIZE]
+        assert decision.template_reason == (
+            "The odd-even depth test failed: finding text; the companion size test failed too."
+        )

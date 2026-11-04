@@ -1,8 +1,9 @@
 """The verifier agent: an LLM that carries out UC-01 steps 3-7 through tool calls.
 
 The model only proposes tool calls; the application runs them, records every result in the
-Investigation and computes the verdict itself. Tool-level rules (FR-07 order, known paper ids)
-are enforced here with ModelRetry, which sends the model a correction instead of failing.
+Investigation and computes the verdict itself. Tool-level rules (FR-07 order, known paper ids,
+plain sentences) are enforced with ModelRetry, which sends the model a correction instead of
+failing.
 """
 
 from __future__ import annotations
@@ -75,6 +76,8 @@ class VerdictForAgent(BaseModel):
     verdict: Verdict
     final: bool
     tests_still_to_run: list[Check]
+    failed_tests: list[str]
+    """Names of the failed tests, for the final sentence."""
     likely_cause: str | None
     what_would_settle_it: list[str]
     note: str
@@ -123,8 +126,8 @@ def classify_paper(
         paper_id: The paper's id, as returned by search_papers.
         stance: "confirms" if the paper shows the candidate is a planet, "rules_out" if it
             shows the signal is not a planet, "mentions" otherwise.
-        justification: One short sentence, based on the title or abstract, that supports
-            the stance.
+        justification: One short plain sentence, based on the title or abstract, that
+            supports the stance.
     """
     try:
         steps.classify_paper(ctx.deps.inv, paper_id, PaperStance(stance), justification, ACTOR)
@@ -184,7 +187,7 @@ def run_check(ctx: RunContext[VerifierDeps], check: Check, reason: str) -> Check
 
     Args:
         check: The test to run.
-        reason: Why this test is run for this candidate, in one short sentence for a student.
+        reason: Why this test is run for this candidate, in one short plain sentence for a student.
     """
     try:
         result = steps.run_check(ctx.deps.inv, ctx.deps.sources, check, reason, actor=ACTOR)
@@ -199,7 +202,7 @@ def skip_check(ctx: RunContext[VerifierDeps], check: Check, reason: str) -> str:
 
     Args:
         check: The test to skip.
-        reason: Why the test is not needed for this candidate, in one short sentence.
+        reason: Why the test is not needed for this candidate, in one short plain sentence.
     """
     try:
         steps.skip_check(ctx.deps.inv, check, reason, ACTOR)
@@ -217,7 +220,9 @@ def get_verdict(ctx: RunContext[VerifierDeps]) -> VerdictForAgent:
     if final:
         inv.verdict_seen = decision.verdict
         inv.checks_when_verdict_seen = len(inv.results)
-        note = "This verdict is final. Answer with one sentence giving its main reason."
+        note = "This verdict is final. Answer with one plain sentence giving its main reason."
+        if len(decision.failed) > 1:
+            note += " Name every failed test in it."
     elif not inv.neighbors_scanned:
         note = "Not final: call find_nearby_stars, then run the tests still to run."
     else:
@@ -227,6 +232,7 @@ def get_verdict(ctx: RunContext[VerifierDeps]) -> VerdictForAgent:
         verdict=decision.verdict,
         final=final,
         tests_still_to_run=decision.not_run,
+        failed_tests=[c.label for c in decision.failed],
         likely_cause=decision.cause,
         what_would_settle_it=decision.settle_by,
         note=note,

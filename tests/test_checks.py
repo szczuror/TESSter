@@ -1,3 +1,5 @@
+import math
+
 import pytest
 from helpers import SOURCE, make_entry
 
@@ -74,6 +76,28 @@ class TestCentroid:
 
     def test_no_shift_passes(self):
         assert checks.centroid_check(centroid(0.4, 0.5), [], "").status is CheckStatus.PASSED
+
+    @pytest.mark.parametrize(
+        ("err", "status"), [(9.0, CheckStatus.UNCLEAR), (5.0, CheckStatus.PASSED)]
+    )
+    def test_without_the_star_catalog_precision_must_beat_a_third_of_a_pixel(self, err, status):
+        # None: the star catalog could not be reached, so a bright star may lie one pixel away.
+        assert checks.centroid_check(centroid(3.0, err), None, "").status is status
+
+
+class TestUnusableErrors:
+    """A zero or missing error must not make a measurement infinitely significant."""
+
+    @pytest.mark.parametrize("err", [0.0, -1.0, math.nan])
+    def test_centroid_without_a_usable_error_is_unclear(self, err):
+        result = checks.centroid_check(centroid(0.0, err), [], "")
+        assert result.status is CheckStatus.UNCLEAR
+        assert result.finding == checks.NO_USABLE_ERROR
+
+    def test_depths_without_errors_are_unclear(self):
+        m = metrics(odd_depth_err_ppm=0, even_depth_err_ppm=0, secondary_depth_err_ppm=0)
+        assert checks.odd_even_check(m, "").status is CheckStatus.UNCLEAR
+        assert checks.secondary_eclipse_check(m, "").status is CheckStatus.UNCLEAR
 
 
 class TestOddEven:
