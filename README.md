@@ -1,4 +1,4 @@
-# TESS VERIFIER 
+# TESSter
 
 AI agent designed to help verify the existence of exoplanets using data from TESS.
 
@@ -77,3 +77,4 @@ tests/              unit tests, end-to-end tests offline, agent tests with a scr
 ```
 
 Planned next: real archives in `sources/` (NASA Exoplanet Archive, ExoFOP, NASA ADS, arXiv, MAST) with light-curve analysis, an MCP server exposing the data sources, RAG over papers and vetting knowledge, and an evaluation suite (`evals/`) for NFR-01 to NFR-04.
+
