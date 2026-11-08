@@ -1,0 +1,186 @@
+{
+  "_comment": "PLACEHOLDER DATA for development. These TOI numbers are made up and the values do not describe real objects.",
+  "retrieved": "2026-11-01",
+  "sources": {
+    "catalog": {
+      "name": "NASA Exoplanet Archive, TOI table",
+      "url": "https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=TOI"
+    },
+    "stars": {
+      "name": "TESS Input Catalog (TIC) at MAST",
+      "url": "https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html"
+    },
+    "light_curves": {
+      "name": "TESS light curves and pixel data at MAST",
+      "url": "https://archive.stsci.edu/missions-and-data/tess"
+    },
+    "papers": {
+      "name": "NASA ADS",
+      "url": "https://ui.adsabs.harvard.edu/"
+    }
+  },
+  "candidates": [
+    {
+      "toi": "TOI-90001.01",
+      "scenario": "No bright neighbors, eclipsing binary tests pass, one paper only mentions it.",
+      "expected_verdict": "likely planet",
+      "tic_id": 900000001,
+      "tmag": 10.2,
+      "ra_deg": 84.2911,
+      "dec_deg": -12.4567,
+      "period_days": 3.8512,
+      "epoch_btjd": 2215.4371,
+      "duration_hours": 2.6,
+      "depth_ppm": 2400,
+      "stellar_radius_rsun": 0.95,
+      "disposition": "PC",
+      "disposition_date": "2026-09-15",
+      "aliases": [],
+      "neighbors": [
+        {"tic_id": 900100011, "separation_arcsec": 71.0, "tmag": 17.4},
+        {"tic_id": 900100012, "separation_arcsec": 132.0, "tmag": 18.1},
+        {"tic_id": 900100013, "separation_arcsec": 160.0, "tmag": 12.0}
+      ],
+      "transit_metrics": {
+        "odd_depth_ppm": 2390, "odd_depth_err_ppm": 60, "odd_transits": 4,
+        "even_depth_ppm": 2410, "even_depth_err_ppm": 60, "even_transits": 4,
+        "secondary_depth_ppm": 15, "secondary_depth_err_ppm": 25
+      },
+      "centroid": {"offset_arcsec": 0.4, "offset_err_arcsec": 0.5},
+      "papers": [
+        {
+          "id": "placeholder-2025-017",
+          "title": "A catalogue of sub-Neptune candidates from the TESS extended mission",
+          "year": 2025,
+          "abstract": "We list 412 new sub-Neptune candidates found in TESS sectors 56 to 69, including TOI-90001.01, and give their transit parameters. We do not attempt to confirm or rule out any of them."
+        }
+      ],
+      "unavailable": []
+    },
+    {
+      "toi": "TOI-90002.01",
+      "scenario": "Odd and even dips differ and a secondary eclipse is seen; no papers.",
+      "expected_verdict": "false positive",
+      "tic_id": 900000002,
+      "tmag": 11.4,
+      "ra_deg": 132.0045,
+      "dec_deg": 25.1129,
+      "period_days": 1.9203,
+      "epoch_btjd": 2301.118,
+      "duration_hours": 2.1,
+      "depth_ppm": 12000,
+      "stellar_radius_rsun": 1.1,
+      "disposition": "PC",
+      "disposition_date": "2026-08-30",
+      "aliases": [],
+      "neighbors": [
+        {"tic_id": 900200021, "separation_arcsec": 95.0, "tmag": 16.8}
+      ],
+      "transit_metrics": {
+        "odd_depth_ppm": 13100, "odd_depth_err_ppm": 150, "odd_transits": 6,
+        "even_depth_ppm": 10900, "even_depth_err_ppm": 150, "even_transits": 6,
+        "secondary_depth_ppm": 900, "secondary_depth_err_ppm": 120
+      },
+      "centroid": {"offset_arcsec": 0.8, "offset_err_arcsec": 0.6},
+      "papers": [],
+      "unavailable": []
+    },
+    {
+      "toi": "TOI-90003.01",
+      "scenario": "A bright star 38 arcsec away; the centroid shifts toward it; one paper rules it out.",
+      "expected_verdict": "false positive",
+      "tic_id": 900000003,
+      "tmag": 9.8,
+      "ra_deg": 201.7731,
+      "dec_deg": -48.0102,
+      "period_days": 6.3017,
+      "epoch_btjd": 2420.661,
+      "duration_hours": 3.1,
+      "depth_ppm": 800,
+      "stellar_radius_rsun": 1.02,
+      "disposition": "PC",
+      "disposition_date": "2026-07-21",
+      "aliases": [],
+      "neighbors": [
+        {"tic_id": 900300031, "separation_arcsec": 38.0, "tmag": 13.1},
+        {"tic_id": 900300032, "separation_arcsec": 120.0, "tmag": 18.9}
+      ],
+      "transit_metrics": {
+        "odd_depth_ppm": 812, "odd_depth_err_ppm": 40, "odd_transits": 3,
+        "even_depth_ppm": 790, "even_depth_err_ppm": 40, "even_transits": 3,
+        "secondary_depth_ppm": 5, "secondary_depth_err_ppm": 20
+      },
+      "centroid": {"offset_arcsec": 14.5, "offset_err_arcsec": 2.1},
+      "papers": [
+        {
+          "id": "placeholder-2026-042",
+          "title": "Seeing-limited photometry shows that the TOI-90003.01 signal comes from a nearby eclipsing binary",
+          "year": 2026,
+          "abstract": "Ground-based time-series photometry of the field of TOI-90003.01 shows a 4.5 percent deep eclipse on TIC 900300031, a star 38 arcseconds from the target, at the TESS period. The target itself shows no dip. We conclude that the TESS signal is caused by this nearby eclipsing binary and that TOI-90003.01 is a false positive."
+        }
+      ],
+      "unavailable": []
+    },
+    {
+      "toi": "TOI-90004.01",
+      "scenario": "A bright star 25 arcsec away and a centroid too coarse to tell; the paper archive is down.",
+      "expected_verdict": "inconclusive",
+      "tic_id": 900000004,
+      "tmag": 12.7,
+      "ra_deg": 310.5512,
+      "dec_deg": 33.877,
+      "period_days": 9.1544,
+      "epoch_btjd": 2390.2205,
+      "duration_hours": 3.8,
+      "depth_ppm": 3100,
+      "stellar_radius_rsun": 0.88,
+      "disposition": "PC",
+      "disposition_date": "2026-10-02",
+      "aliases": [],
+      "neighbors": [
+        {"tic_id": 900400041, "separation_arcsec": 25.0, "tmag": 14.9}
+      ],
+      "transit_metrics": {
+        "odd_depth_ppm": 3080, "odd_depth_err_ppm": 110, "odd_transits": 2,
+        "even_depth_ppm": 3120, "even_depth_err_ppm": 110, "even_transits": 2,
+        "secondary_depth_ppm": 20, "secondary_depth_err_ppm": 40
+      },
+      "centroid": {"offset_arcsec": 3.0, "offset_err_arcsec": 9.0},
+      "papers": [],
+      "unavailable": ["papers"]
+    },
+    {
+      "toi": "TOI-90005.01",
+      "scenario": "The catalog says false positive (from radial velocities), but every TESS test passes.",
+      "expected_verdict": "likely planet",
+      "tic_id": 900000005,
+      "tmag": 10.9,
+      "ra_deg": 55.1203,
+      "dec_deg": 70.3349,
+      "period_days": 12.4471,
+      "epoch_btjd": 2205.9032,
+      "duration_hours": 4.4,
+      "depth_ppm": 1500,
+      "stellar_radius_rsun": 1.25,
+      "disposition": "FP",
+      "disposition_date": "2026-06-02",
+      "aliases": [],
+      "neighbors": [],
+      "transit_metrics": {
+        "odd_depth_ppm": 1490, "odd_depth_err_ppm": 70, "odd_transits": 2,
+        "even_depth_ppm": 1520, "even_depth_err_ppm": 70, "even_transits": 2,
+        "secondary_depth_ppm": 10, "secondary_depth_err_ppm": 30
+      },
+      "centroid": null,
+      "papers": [
+        {
+          "id": "placeholder-2026-008",
+          "title": "Radial velocities reveal a low-mass star orbiting TOI-90005",
+          "year": 2026,
+          "abstract": "Radial velocity monitoring of TOI-90005 shows a 12.45-day orbit with a semi-amplitude of 6.1 km/s, which implies a companion of about 0.15 solar masses. The transiting object of TOI-90005.01 is therefore a low-mass star, not a planet, even though its TESS transit looks planet-like."
+        }
+      ],
+      "unavailable": []
+    }
+  ]
+}
