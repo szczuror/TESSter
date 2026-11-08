@@ -11,7 +11,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Protocol
 
-from tess_verifier.models import (
+from tesster.models import (
     CatalogEntry,
     CentroidMeasurement,
     NearbyStar,

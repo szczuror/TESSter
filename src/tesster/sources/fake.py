@@ -13,7 +13,7 @@ from datetime import date
 from importlib import resources
 from typing import Any
 
-from tess_verifier.models import (
+from tesster.models import (
     CatalogEntry,
     CentroidMeasurement,
     NearbyStar,
@@ -23,7 +23,7 @@ from tess_verifier.models import (
     TransitMetrics,
     parse_toi,
 )
-from tess_verifier.sources.base import (
+from tesster.sources.base import (
     CandidateNotFoundError,
     DataSources,
     SourceUnavailableError,
@@ -35,7 +35,7 @@ LIGHT_CURVE_ARCHIVE_NAME = "Light-curve archive (TESS data at MAST)"
 
 
 def load_fixtures() -> dict[str, Any]:
-    text = resources.files("tess_verifier.sources").joinpath("fixtures/candidates.json")
+    text = resources.files("tesster.sources").joinpath("fixtures/candidates.json")
     return json.loads(text.read_text(encoding="utf-8"))
 
 

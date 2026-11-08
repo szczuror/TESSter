@@ -16,11 +16,11 @@ from datetime import UTC, datetime
 
 from pydantic_ai import AgentRunError, ModelAuthenticationError, ModelNotFoundError, UserError
 
-from tess_verifier import investigation as steps
-from tess_verifier.agent.verifier import run_verifier
-from tess_verifier.config import Settings
-from tess_verifier.investigation import SAFETY_NET, Investigation
-from tess_verifier.models import (
+from tesster import investigation as steps
+from tesster.agent.verifier import run_verifier
+from tesster.config import Settings
+from tesster.investigation import SAFETY_NET, Investigation
+from tesster.models import (
     Check,
     Disposition,
     InvalidToiError,
@@ -30,8 +30,8 @@ from tess_verifier.models import (
     Verdict,
     parse_toi,
 )
-from tess_verifier.sources import CandidateNotFoundError, DataSources, SourceUnavailableError
-from tess_verifier.vetting.verdict import ECLIPSING_BINARY_CHECKS, Decision
+from tesster.sources import CandidateNotFoundError, DataSources, SourceUnavailableError
+from tesster.vetting.verdict import ECLIPSING_BINARY_CHECKS, Decision
 
 STANDARD_REASONS = {
     Check.ODD_EVEN: "Always run: two stars eclipsing each other can mimic a transit and often "

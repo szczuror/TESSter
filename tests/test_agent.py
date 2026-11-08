@@ -5,13 +5,13 @@ from pydantic_ai import ModelAuthenticationError, UnexpectedModelBehavior
 from pydantic_ai.messages import ModelMessage, ModelResponse, TextPart, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 
-from tess_verifier import investigation as steps
-from tess_verifier.agent.followup import ask_followup, followup_agent
-from tess_verifier.agent.verifier import candidate_prompt, verifier_agent
-from tess_verifier.config import Settings
-from tess_verifier.investigation import Investigation
-from tess_verifier.models import Check, PaperStance, Report, Verdict, parse_toi
-from tess_verifier.pipeline import ConfigurationError, check_candidate
+from tesster import investigation as steps
+from tesster.agent.followup import ask_followup, followup_agent
+from tesster.agent.verifier import candidate_prompt, verifier_agent
+from tesster.config import Settings
+from tesster.investigation import Investigation
+from tesster.models import Check, PaperStance, Report, Verdict, parse_toi
+from tesster.pipeline import ConfigurationError, check_candidate
 
 
 class Script:

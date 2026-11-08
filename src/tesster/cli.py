@@ -1,4 +1,4 @@
-"""Command line: ``tess-verifier check TOI-...`` and ``tess-verifier samples``."""
+"""Command line: ``tesster check TOI-...`` and ``tesster samples``."""
 
 from __future__ import annotations
 
@@ -16,16 +16,15 @@ from rich.markup import escape
 from rich.prompt import Prompt
 from rich.table import Table
 
-from tess_verifier.config import Settings, load_settings
-from tess_verifier.models import NotChecked, Report
-from tess_verifier.pipeline import ConfigurationError, check_candidate, check_many
-from tess_verifier.report import render_report, render_summary, render_trace
-from tess_verifier.sources import build_sources
-from tess_verifier.sources.fake import FixtureSources
+from tesster.config import Settings, load_settings
+from tesster.models import NotChecked, Report
+from tesster.pipeline import ConfigurationError, check_candidate, check_many
+from tesster.report import render_report, render_summary, render_trace
+from tesster.sources import build_sources
+from tesster.sources.fake import FixtureSources
 
 app = typer.Typer(
-    help="TESS Verifier: checks whether a TESS candidate (TOI) looks like a planet or a "
-    "false positive.",
+    help="TESSter: checks whether a TESS candidate (TOI) looks like a planet or a false positive.",
     no_args_is_help=True,
     add_completion=False,
 )
@@ -59,7 +58,7 @@ def check(
     ] = False,
     model: Annotated[
         str | None,
-        typer.Option(help="LLM as provider:model. Overrides TESS_VERIFIER_MODEL."),
+        typer.Option(help="LLM as provider:model. Overrides TESSTER_MODEL."),
     ] = None,
     out: Annotated[Path | None, typer.Option(help="Folder to save Markdown reports in.")] = None,
     chat: Annotated[
@@ -135,7 +134,7 @@ def samples() -> None:
     for toi, scenario, expected in FixtureSources().scenarios():
         table.add_row(toi, scenario, expected)
     console.print(table)
-    console.print("Try: tess-verifier check TOI-90003.01 --offline")
+    console.print("Try: tesster check TOI-90003.01 --offline")
 
 
 def _save(folder: Path, outcomes: Sequence[Report | NotChecked], reports: Sequence[Report]) -> None:
@@ -149,7 +148,7 @@ def _save(folder: Path, outcomes: Sequence[Report | NotChecked], reports: Sequen
 
 def _chat(report: Report, settings: Settings) -> None:
     """UC-02: answer questions about the report until the user enters an empty line."""
-    from tess_verifier.agent.followup import ask_followup
+    from tesster.agent.followup import ask_followup
 
     console.print("\nAsk about this report. An empty line ends the conversation.")
     history: list[ModelMessage] | None = None

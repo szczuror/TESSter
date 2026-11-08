@@ -2,10 +2,10 @@
 
 import pytest
 
-from tess_verifier.models import Check, CheckStatus, NotChecked, Report, Verdict
-from tess_verifier.pipeline import check_candidate, check_many
-from tess_verifier.sources import DataSources
-from tess_verifier.sources.fake import FixtureSources, load_fixtures
+from tesster.models import Check, CheckStatus, NotChecked, Report, Verdict
+from tesster.pipeline import check_candidate, check_many
+from tesster.sources import DataSources
+from tesster.sources.fake import FixtureSources, load_fixtures
 
 
 def offline(toi: str, sources, settings, **kwargs) -> Report:

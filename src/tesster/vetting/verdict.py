@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from tess_verifier.models import Check, CheckResult, CheckStatus, NeighborAssessment, Verdict
+from tesster.models import Check, CheckResult, CheckStatus, NeighborAssessment, Verdict
 
 ECLIPSING_BINARY_CHECKS = (Check.ODD_EVEN, Check.SECONDARY_ECLIPSE, Check.COMPANION_SIZE)
 """FR-06: always check whether the dip could come from two stars eclipsing each other."""

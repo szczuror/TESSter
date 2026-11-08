@@ -16,13 +16,13 @@ from pydantic import BaseModel
 from pydantic_ai import Agent, ModelRetry, RunContext, UsageLimits
 from pydantic_ai.settings import ModelSettings
 
-from tess_verifier import investigation as steps
-from tess_verifier.agent.instructions import VERIFIER_INSTRUCTIONS
-from tess_verifier.config import Settings
-from tess_verifier.investigation import Investigation, StepError
-from tess_verifier.models import Check, CheckStatus, PaperStance, Verdict
-from tess_verifier.sources import DataSources
-from tess_verifier.vetting.checks import NEARBY_RADIUS_ARCMIN
+from tesster import investigation as steps
+from tesster.agent.instructions import VERIFIER_INSTRUCTIONS
+from tesster.config import Settings
+from tesster.investigation import Investigation, StepError
+from tesster.models import Check, CheckStatus, PaperStance, Verdict
+from tesster.sources import DataSources
+from tesster.vetting.checks import NEARBY_RADIUS_ARCMIN
 
 pydantic_ai.BANNER_ENABLED = False
 
@@ -87,7 +87,7 @@ verifier_agent = Agent(
     deps_type=VerifierDeps,
     output_type=str,
     instructions=VERIFIER_INSTRUCTIONS,
-    name="tess-verifier",
+    name="tesster",
 )
 
 

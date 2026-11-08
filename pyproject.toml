@@ -1,5 +1,5 @@
 [project]
-name = "tess-verifier"
+name = "tesster"
 version = "0.1.0"
 description = "AI agent that checks whether a TESS candidate (TOI) looks like a planet or a false positive."
 readme = "README.md"
@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-tess-verifier = "tess_verifier.cli:app"
+tesster = "tesster.cli:app"
 
 [build-system]
 requires = ["uv_build>=0.13.0,<0.14.0"]

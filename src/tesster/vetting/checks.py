@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import math
 
-from tess_verifier.models import (
+from tesster.models import (
     CatalogEntry,
     CentroidMeasurement,
     Check,

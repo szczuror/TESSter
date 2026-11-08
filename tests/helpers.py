@@ -1,4 +1,4 @@
-from tess_verifier.models import CatalogEntry, Source, ToiId
+from tesster.models import CatalogEntry, Source, ToiId
 
 SOURCE = Source(name="Test catalog", url="https://example.org/catalog")
 
