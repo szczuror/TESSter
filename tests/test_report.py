@@ -1,6 +1,6 @@
-from tess_verifier.models import CheckStatus, NotChecked, Report
-from tess_verifier.pipeline import check_candidate, check_many
-from tess_verifier.report import BLIND_BANNER, PLACEHOLDER_BANNER, render_report, render_summary
+from tesster.models import CheckStatus, NotChecked, Report
+from tesster.pipeline import check_candidate, check_many
+from tesster.report import BLIND_BANNER, PLACEHOLDER_BANNER, render_report, render_summary
 
 
 def offline(toi: str, sources, settings, **kwargs) -> Report:

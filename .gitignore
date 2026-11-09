@@ -15,7 +15,7 @@ build/
 .coverage
 htmlcov/
 
-# Generated reports (tess-verifier check --out reports)
+# Generated reports (tesster check --out reports)
 reports/
 
 # Editors and OS

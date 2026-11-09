@@ -1,12 +1,12 @@
 """Outside data sources (supporting actors in docs/use-cases.md)."""
 
-from tess_verifier.sources.base import (
+from tesster.sources.base import (
     CandidateNotFoundError,
     DataSources,
     SourceError,
     SourceUnavailableError,
 )
-from tess_verifier.sources.fake import fake_sources
+from tesster.sources.fake import fake_sources
 
 
 def build_sources(kind: str = "fake") -> DataSources:

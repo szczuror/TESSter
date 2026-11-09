@@ -1,6 +1,6 @@
 import pytest
 
-from tess_verifier.models import TOI_FORMAT_HINT, InvalidToiError, ToiId, parse_toi
+from tesster.models import TOI_FORMAT_HINT, InvalidToiError, ToiId, parse_toi
 
 
 @pytest.mark.parametrize("text", ["TOI-1234.01", "toi-1234.01", "  TOI 1234.01 ", "TOI1234.01"])

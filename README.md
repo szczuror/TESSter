@@ -1,4 +1,4 @@
-# TESS VERIFIER 
+# TESSter
 
 AI agent designed to help verify the existence of exoplanets using data from TESS.
 
@@ -28,26 +28,26 @@ An LLM runs the check through tool calls, but code computes the verdict from the
 3. Copy `.env.example` to `.env` and put your key of the [PSNC LLM service](https://llm.hpc.psnc.pl/) in `VLLM_API_KEY`. The default model is `vllm:gpt-oss_120b`, which PSNC serves through an OpenAI-compatible API; `.env.example` already sets its address:
 
    ```bash
-   TESS_VERIFIER_MODEL=vllm:gpt-oss_120b
+   TESSTER_MODEL=vllm:gpt-oss_120b
    VLLM_BASE_URL=https://llm.hpc.psnc.pl/v1
    VLLM_API_KEY=<your key>
    ```
 
-   To use another model, change `TESS_VERIFIER_MODEL` and put in the key of its provider, e.g. `anthropic:claude-haiku-5-5` with `ANTHROPIC_API_KEY`, `openai:<model>` with `OPENAI_API_KEY` or `google:<model>` with `GOOGLE_API_KEY`. Other PSNC models keep the `vllm:` prefix, with the name exactly as PSNC lists it.
+   To use another model, change `TESSTER_MODEL` and put in the key of its provider, e.g. `anthropic:claude-haiku-5-5` with `ANTHROPIC_API_KEY`, `openai:<model>` with `OPENAI_API_KEY` or `google:<model>` with `GOOGLE_API_KEY`. Other PSNC models keep the `vllm:` prefix, with the name exactly as PSNC lists it.
 
 `.env` is ignored by git. Never commit API keys.
 
 ## Usage
 
 ```bash
-uv run tess-verifier samples                               # list the placeholder candidates
-uv run tess-verifier check TOI-90003.01                    # check one candidate with the LLM agent
-uv run tess-verifier check TOI-90003.01 --verbose          # also show every tool call and the token usage
-uv run tess-verifier check TOI-90003.01 --chat             # ask follow-up questions about the report
-uv run tess-verifier check TOI-90001.01 TOI-90002.01 TOI-90004.01   # several candidates, likely planets first
-uv run tess-verifier check TOI-90004.01 --offline          # standard procedure without an LLM (no key needed)
-uv run tess-verifier check TOI-90005.01 --blind            # hide catalog status, names and papers (evaluation)
-uv run tess-verifier check TOI-90001.01 --out reports      # also save the report as Markdown
+uv run tesster samples                               # list the placeholder candidates
+uv run tesster check TOI-90003.01                    # check one candidate with the LLM agent
+uv run tesster check TOI-90003.01 --verbose          # also show every tool call and the token usage
+uv run tesster check TOI-90003.01 --chat             # ask follow-up questions about the report
+uv run tesster check TOI-90001.01 TOI-90002.01 TOI-90004.01   # several candidates, likely planets first
+uv run tesster check TOI-90004.01 --offline          # standard procedure without an LLM (no key needed)
+uv run tesster check TOI-90005.01 --blind            # hide catalog status, names and papers (evaluation)
+uv run tesster check TOI-90001.01 --out reports      # also save the report as Markdown
 ```
 
 ## Development
@@ -63,7 +63,7 @@ CI runs the same checks on every pull request.
 ## Project structure
 
 ```
-src/tess_verifier/
+src/tesster/
   cli.py            command line (Typer)
   config.py         settings from environment variables / .env
   models.py         domain model: TOI numbers, sources, checks, verdicts, reports
@@ -77,3 +77,4 @@ tests/              unit tests, end-to-end tests offline, agent tests with a scr
 ```
 
 Planned next: real archives in `sources/` (NASA Exoplanet Archive, ExoFOP, NASA ADS, arXiv, MAST) with light-curve analysis, an MCP server exposing the data sources, RAG over papers and vetting knowledge, and an evaluation suite (`evals/`) for NFR-01 to NFR-04.
+

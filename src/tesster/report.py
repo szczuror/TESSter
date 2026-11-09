@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from tess_verifier.models import CheckStatus, NotChecked, Report, Source
-from tess_verifier.vetting.checks import NEARBY_RADIUS_ARCMIN
+from tesster.models import CheckStatus, NotChecked, Report, Source
+from tesster.vetting.checks import NEARBY_RADIUS_ARCMIN
 
 PLACEHOLDER_BANNER = (
     "> **Placeholder data.** The values below are made up for development and do not describe "

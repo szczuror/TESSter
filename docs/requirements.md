@@ -1,6 +1,6 @@
 # Requirements
 
-Requirements say what TESS Verifier must do and within what limits. Each one comes from the [vision](vision.md) and describes one behavior that can be checked, without saying how the system is built.
+Requirements say what TESSter must do and within what limits. Each one comes from the [vision](vision.md) and describes one behavior that can be checked, without saying how the system is built.
 
 ## Notation
 

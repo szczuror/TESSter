@@ -1,7 +1,7 @@
 import pytest
 from typer.testing import CliRunner
 
-from tess_verifier.cli import app
+from tesster.cli import app
 
 runner = CliRunner()
 
@@ -9,8 +9,8 @@ runner = CliRunner()
 @pytest.fixture(autouse=True)
 def no_dotenv(monkeypatch):
     """Keep a developer's local .env and LLM variables out of the tests."""
-    monkeypatch.setattr("tess_verifier.config.load_dotenv", lambda *args, **kwargs: False)
-    for name in ("TESS_VERIFIER_MODEL", "TESS_VERIFIER_DATA", "VLLM_BASE_URL", "VLLM_API_KEY"):
+    monkeypatch.setattr("tesster.config.load_dotenv", lambda *args, **kwargs: False)
+    for name in ("TESSTER_MODEL", "TESSTER_DATA", "VLLM_BASE_URL", "VLLM_API_KEY"):
         monkeypatch.delenv(name, raising=False)
 
 

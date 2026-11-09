@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 from typing import assert_never
 
-from tess_verifier.models import (
+from tesster.models import (
     CatalogEntry,
     Check,
     CheckResult,
@@ -22,9 +22,9 @@ from tess_verifier.models import (
     ToiId,
     Verdict,
 )
-from tess_verifier.sources import DataSources, SourceUnavailableError
-from tess_verifier.vetting import checks
-from tess_verifier.vetting.verdict import Decision, decide, required_checks
+from tesster.sources import DataSources, SourceUnavailableError
+from tesster.vetting import checks
+from tesster.vetting.verdict import Decision, decide, required_checks
 
 SAFETY_NET = "safety net"
 """Actor name for steps the pipeline runs because the agent did not."""

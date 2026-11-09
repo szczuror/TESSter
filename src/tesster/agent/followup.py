@@ -9,9 +9,9 @@ from pydantic_ai import Agent, RunContext, UsageLimits
 from pydantic_ai.messages import ModelMessage
 from pydantic_ai.settings import ModelSettings
 
-from tess_verifier.agent.instructions import FOLLOWUP_INSTRUCTIONS
-from tess_verifier.config import Settings
-from tess_verifier.models import Report
+from tesster.agent.instructions import FOLLOWUP_INSTRUCTIONS
+from tesster.config import Settings
+from tesster.models import Report
 
 pydantic_ai.BANNER_ENABLED = False
 
@@ -19,7 +19,7 @@ followup_agent = Agent(
     deps_type=Report,
     output_type=str,
     instructions=FOLLOWUP_INSTRUCTIONS,
-    name="tess-verifier-followup",
+    name="tesster-followup",
 )
 
 

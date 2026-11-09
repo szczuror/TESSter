@@ -1,6 +1,6 @@
 import pytest
 
-from tess_verifier.models import (
+from tesster.models import (
     Check,
     CheckResult,
     CheckStatus,
@@ -9,7 +9,7 @@ from tess_verifier.models import (
     Source,
     Verdict,
 )
-from tess_verifier.vetting.verdict import (
+from tesster.vetting.verdict import (
     CAUSES,
     ECLIPSING_BINARY_CHECKS,
     NEARBY_ECLIPSING_BINARY,

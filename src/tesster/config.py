@@ -11,14 +11,14 @@ DEFAULT_MODEL = "vllm:gpt-oss_120b"
 
 
 class Settings(BaseSettings):
-    """All variables use the TESS_VERIFIER_ prefix, e.g. TESS_VERIFIER_MODEL.
+    """All variables use the TESSTER_ prefix, e.g. TESSTER_MODEL.
 
     Provider credentials are not settings here: each provider reads its own variables,
     VLLM_BASE_URL and VLLM_API_KEY for the default model (PSNC), or ANTHROPIC_API_KEY,
     OPENAI_API_KEY, GOOGLE_API_KEY.
     """
 
-    model_config = SettingsConfigDict(env_prefix="TESS_VERIFIER_", extra="ignore")
+    model_config = SettingsConfigDict(env_prefix="TESSTER_", extra="ignore")
 
     model: str = DEFAULT_MODEL
     """LLM as provider:model, e.g. vllm:gpt-oss_120b or openai:<model>."""

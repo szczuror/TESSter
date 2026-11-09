@@ -1,4 +1,4 @@
-# TESS Verifier
+# TESSter
 
 NASA's TESS satellite looks for small, regular dips in starlight that may mean a planet is passing in front of a star. Of over 8,000 candidates found so far, only a third have been resolved, and half of those were not planets. Often it was two stars eclipsing each other, or light from a nearby star mixed into the same pixels. Checking a candidate takes data from several archives and knowledge that most students and amateur astronomers do not have.
 

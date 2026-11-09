@@ -1,6 +1,6 @@
 # Use Cases
 
-Use cases describe who uses TESS Verifier and what they do with it. They follow the [vision](vision.md), each step names the [requirements](requirements.md) it covers, and terms are defined in the [glossary](glossary.md).
+Use cases describe who uses TESSter and what they do with it. They follow the [vision](vision.md), each step names the [requirements](requirements.md) it covers, and terms are defined in the [glossary](glossary.md).
 
 ## Notation
 
@@ -34,7 +34,7 @@ In the rest of this document, *user* means either kind of user. Links to the ext
 flowchart LR
     user["User"]
 
-    subgraph system["TESS Verifier"]
+    subgraph system["TESSter"]
         uc1(["UC-01 Verify a candidate"])
         uc2(["UC-02 Ask about a report"])
         uc3(["UC-03 Verify several candidates"])

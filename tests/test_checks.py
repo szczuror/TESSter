@@ -3,13 +3,13 @@ import math
 import pytest
 from helpers import SOURCE, make_entry
 
-from tess_verifier.models import (
+from tesster.models import (
     CentroidMeasurement,
     CheckStatus,
     NearbyStar,
     TransitMetrics,
 )
-from tess_verifier.vetting import checks
+from tesster.vetting import checks
 
 
 def metrics(**overrides) -> TransitMetrics:
