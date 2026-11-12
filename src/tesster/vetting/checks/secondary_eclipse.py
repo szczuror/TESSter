@@ -9,6 +9,7 @@ from tesster.vetting.checks.common import (
     significance,
     without_usable_error,
 )
+from tesster.vetting.spec import CheckContext, CheckSpec, Family, always
 
 
 def secondary_eclipse_check(metrics: TransitMetrics | None, reason: str) -> CheckResult:
@@ -42,3 +43,21 @@ def secondary_eclipse_check(metrics: TransitMetrics | None, reason: str) -> Chec
         f"{sigma:.1f} sigma).",
         sources=sources,
     )
+
+
+def _run(ctx: CheckContext) -> CheckResult:
+    return secondary_eclipse_check(ctx.sources.light_curves.transit_metrics(ctx.entry), ctx.reason)
+
+
+SPEC = CheckSpec(
+    check=Check.SECONDARY_ECLIPSE,
+    family=Family.ECLIPSING_BINARY,
+    looks_for="is there a second, shallower dip between the main dips?",
+    cause="two stars eclipsing each other (an eclipsing binary)",
+    settle_by="More light-curve data, from new TESS sectors or ground-based photometry, to look "
+    "for a secondary eclipse.",
+    standard_reason="Always run: a pair of eclipsing stars often shows a second, shallower "
+    "eclipse between the main dips (FR-06).",
+    required_when=always,
+    run=_run,
+)

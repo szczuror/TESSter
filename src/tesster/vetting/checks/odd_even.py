@@ -11,6 +11,7 @@ from tesster.vetting.checks.common import (
     significance,
     without_usable_error,
 )
+from tesster.vetting.spec import CheckContext, CheckSpec, Family, always
 
 
 def odd_even_check(metrics: TransitMetrics | None, reason: str) -> CheckResult:
@@ -49,3 +50,21 @@ def odd_even_check(metrics: TransitMetrics | None, reason: str) -> CheckResult:
         finding=f"Odd and even dips are equally deep within the errors ({sigma:.1f} sigma).",
         sources=sources,
     )
+
+
+def _run(ctx: CheckContext) -> CheckResult:
+    return odd_even_check(ctx.sources.light_curves.transit_metrics(ctx.entry), ctx.reason)
+
+
+SPEC = CheckSpec(
+    check=Check.ODD_EVEN,
+    family=Family.ECLIPSING_BINARY,
+    looks_for="are odd and even dips equally deep? Two eclipsing stars often alternate.",
+    cause="two stars eclipsing each other (an eclipsing binary)",
+    settle_by="More transits, from new TESS sectors or ground-based photometry, to compare odd "
+    "and even dips.",
+    standard_reason="Always run: two stars eclipsing each other can mimic a transit and often "
+    "make alternating deeper and shallower dips (FR-06).",
+    required_when=always,
+    run=_run,
+)

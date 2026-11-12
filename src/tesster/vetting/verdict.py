@@ -1,59 +1,31 @@
-"""Which checks are required, and the verdict rule (FR-06, FR-07, FR-11, FR-12, FR-13).
+"""The verdict rule (FR-11, FR-12, FR-13).
 
 The verdict is computed here, never by the LLM, so the same check results always give the same
-verdict (NFR-03).
+verdict (NFR-03). What each test contributes (its cause, what would settle it, when it is
+required) comes from the registry.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from tesster.models import Check, CheckResult, CheckStatus, NeighborAssessment, Verdict
+from tesster.models import Check, CheckResult, CheckStatus, Verdict
+from tesster.vetting.registry import SPECS, priority, spec_for
+from tesster.vetting.registry import required_checks as required_checks
+from tesster.vetting.spec import Family
 
-ECLIPSING_BINARY_CHECKS = (Check.ODD_EVEN, Check.SECONDARY_ECLIPSE, Check.COMPANION_SIZE)
-"""FR-06: always check whether the dip could come from two stars eclipsing each other."""
-
-CAUSES = {
-    Check.CENTROID: "a nearby star (the dip comes from another star whose light falls into the "
-    "same pixels)",
-    Check.ODD_EVEN: "two stars eclipsing each other (an eclipsing binary)",
-    Check.SECONDARY_ECLIPSE: "two stars eclipsing each other (an eclipsing binary)",
-    Check.COMPANION_SIZE: "a star rather than a planet (the transiting object is too big to be "
-    "a planet)",
-}
-"""FR-12: the likely cause when a check fails."""
-
-FAILURE_PRIORITY = (Check.CENTROID, Check.ODD_EVEN, Check.SECONDARY_ECLIPSE, Check.COMPANION_SIZE)
-"""When several tests fail, the cause and the main reason come from the first of them in this
-order, not from the order the tests ran in, so repeated checks give the same report (NFR-03)."""
+# Views of the registry under their old names. They go away once the tests use the registry.
+ECLIPSING_BINARY_CHECKS = tuple(
+    check for check, spec in SPECS.items() if spec.family is Family.ECLIPSING_BINARY
+)
+CAUSES = {check: spec.cause for check, spec in SPECS.items()}
+SETTLE_BY = {check: spec.settle_by for check, spec in SPECS.items()}
 
 NEARBY_ECLIPSING_BINARY = (
     "a nearby eclipsing binary (another star in the same pixels is a pair of stars eclipsing "
     "each other)"
 )
-
-SETTLE_BY = {
-    Check.CENTROID: "High-resolution imaging or seeing-limited photometry from the ground, to "
-    "see which nearby star dims.",
-    Check.ODD_EVEN: "More transits, from new TESS sectors or ground-based photometry, to compare "
-    "odd and even dips.",
-    Check.SECONDARY_ECLIPSE: "More light-curve data, from new TESS sectors or ground-based "
-    "photometry, to look for a secondary eclipse.",
-    Check.COMPANION_SIZE: "A spectrum of the host star, to measure its radius.",
-}
-"""FR-13: the observation or data that would settle a check without a result."""
-
-
-def required_checks(neighbors: list[NeighborAssessment] | None) -> list[Check]:
-    """Checks every verdict needs, in the order they must run.
-
-    The centroid test comes first when a star bright enough to cause the dip lies within
-    2.5 arcmin (FR-07), and also when the star catalog could not be reached (``None``),
-    because then such a star cannot be ruled out.
-    """
-    if neighbors is None or any(n.could_cause_dip for n in neighbors):
-        return [Check.CENTROID, *ECLIPSING_BINARY_CHECKS]
-    return list(ECLIPSING_BINARY_CHECKS)
+"""FR-12: the likely cause when the dip comes from another star and that star is a binary."""
 
 
 @dataclass(frozen=True)
@@ -63,7 +35,7 @@ class Decision:
     """One-sentence main reason built without the LLM (FR-10)."""
     cause: str | None = None
     failed: list[Check] = field(default_factory=list)
-    """Failed checks, in FAILURE_PRIORITY order."""
+    """Failed checks, in registry order."""
     settle_by: list[str] = field(default_factory=list)
     not_run: list[Check] = field(default_factory=list)
     """Required checks that have no result yet."""
@@ -77,15 +49,15 @@ def decide(results: list[CheckResult], required: list[Check]) -> Decision:
 
     failed = sorted(
         (r for r in results if r.status is CheckStatus.FAILED),
-        key=lambda r: FAILURE_PRIORITY.index(r.check),
+        key=lambda r: priority(r.check),
     )
     if failed:
         first = failed[0]
-        failed_checks = {r.check for r in failed}
-        if Check.CENTROID in failed_checks and failed_checks & set(ECLIPSING_BINARY_CHECKS):
+        families = {spec_for(r.check).family for r in failed}
+        if {Family.SOURCE, Family.ECLIPSING_BINARY} <= families:
             cause = NEARBY_ECLIPSING_BINARY
         else:
-            cause = CAUSES[first.check]
+            cause = spec_for(first.check).cause
         reason = f"The {first.check.label.lower()} failed: {_lower_first(first.finding)}"
         if len(failed) > 1:
             others = _join([r.check.label.lower() for r in failed[1:]])
@@ -112,7 +84,7 @@ def decide(results: list[CheckResult], required: list[Check]) -> Decision:
         verdict=Verdict.INCONCLUSIVE,
         template_reason=f"No test failed, but the {labels} gave no clear result, so a false "
         "positive cannot be ruled out yet.",
-        settle_by=[SETTLE_BY[c] for c in without_pass],
+        settle_by=[spec_for(c).settle_by for c in without_pass],
         not_run=not_run,
     )
 

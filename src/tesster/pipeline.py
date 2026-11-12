@@ -21,7 +21,6 @@ from tesster.agent.verifier import run_verifier
 from tesster.config import Settings
 from tesster.investigation import SAFETY_NET, Investigation
 from tesster.models import (
-    Check,
     Disposition,
     InvalidToiError,
     NotChecked,
@@ -31,19 +30,9 @@ from tesster.models import (
     parse_toi,
 )
 from tesster.sources import CandidateNotFoundError, DataSources, SourceUnavailableError
-from tesster.vetting.verdict import ECLIPSING_BINARY_CHECKS, Decision
+from tesster.vetting.registry import SPECS, spec_for
+from tesster.vetting.verdict import Decision
 
-STANDARD_REASONS = {
-    Check.ODD_EVEN: "Always run: two stars eclipsing each other can mimic a transit and often "
-    "make alternating deeper and shallower dips (FR-06).",
-    Check.SECONDARY_ECLIPSE: "Always run: a pair of eclipsing stars often shows a second, "
-    "shallower eclipse between the main dips (FR-06).",
-    Check.COMPANION_SIZE: "Always run: an object too big to be a planet must be a star (FR-06).",
-}
-CENTROID_NOT_NEEDED = (
-    "No star within 2.5 arcmin is bright enough to cause the dip, so the centroid test is not "
-    "needed (FR-07)."
-)
 VERDICT_ORDER = {Verdict.LIKELY_PLANET: 0, Verdict.INCONCLUSIVE: 1, Verdict.FALSE_POSITIVE: 2}
 """FR-16: likely planets first; inputs without a report go last."""
 
@@ -119,12 +108,12 @@ def run_standard_procedure(inv: Investigation, sources: DataSources) -> None:
     """UC-01 steps 3-6 without an LLM. Safe to run on a partly done investigation."""
     steps.find_papers(inv, sources)
     steps.scan_neighbors(inv, sources)
-    if Check.CENTROID in inv.required:
-        steps.run_check(inv, sources, Check.CENTROID, _centroid_reason(inv))
-    elif inv.result_for(Check.CENTROID) is None:
-        steps.skip_check(inv, Check.CENTROID, CENTROID_NOT_NEEDED)
-    for check in ECLIPSING_BINARY_CHECKS:
-        steps.run_check(inv, sources, check, STANDARD_REASONS[check])
+    # Registry order puts the centroid test first, as FR-07 needs when it is required.
+    for check, spec in SPECS.items():
+        if check in inv.required:
+            steps.run_check(inv, sources, check, spec.reason(inv.neighbors))
+        elif spec.not_needed_reason is not None:
+            steps.skip_check(inv, check, spec.not_needed_reason)
 
 
 def apply_safety_net(inv: Investigation, sources: DataSources) -> None:
@@ -136,7 +125,7 @@ def apply_safety_net(inv: Investigation, sources: DataSources) -> None:
     added = 0
     for check in inv.required:
         if inv.result_for(check) is None:
-            reason = _centroid_reason(inv) if check is Check.CENTROID else STANDARD_REASONS[check]
+            reason = spec_for(check).reason(inv.neighbors)
             steps.run_check(inv, sources, check, reason, actor=SAFETY_NET)
             added += 1
     if added:
@@ -191,19 +180,6 @@ def _main_reason(inv: Investigation, decision: Decision, agent_reason: str | Non
         )
         return decision.template_reason
     return agent_reason
-
-
-def _centroid_reason(inv: Investigation) -> str:
-    if inv.neighbors is None:
-        return (
-            "The star catalog could not be reached, so a bright nearby star cannot be ruled "
-            "out and we check which star the dip comes from (FR-07)."
-        )
-    closest = min(inv.bright_neighbors, key=lambda n: n.star.separation_arcsec)
-    return (
-        f"TIC {closest.star.tic_id}, {closest.star.separation_arcsec:.0f} arcsec away, is bright "
-        "enough to cause the dip, so we first check which star the dip comes from (FR-07)."
-    )
 
 
 def _disagreements(inv: Investigation, verdict: Verdict) -> list[str]:

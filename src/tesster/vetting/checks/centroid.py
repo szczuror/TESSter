@@ -10,6 +10,7 @@ from tesster.models import (
     NeighborAssessment,
 )
 from tesster.vetting.checks.common import SIGMA_LIMIT, significance, without_usable_error
+from tesster.vetting.spec import CheckContext, CheckSpec, Family, Neighbors
 
 CENTROID_PRECISION_FRACTION = 1 / 3
 """The centroid must be measured to better than this fraction of the distance to the neighbor."""
@@ -85,3 +86,51 @@ def centroid_check(
         f"{err:.1f} arcsec, {sigma:.1f} sigma), as expected if the target star dims.",
         sources=sources,
     )
+
+
+def _bright(neighbors: Neighbors) -> Neighbors:
+    """The stars bright enough to cause the dip. None when the star catalog was not reached."""
+    return None if neighbors is None else [n for n in neighbors if n.could_cause_dip]
+
+
+def _required(neighbors: Neighbors) -> bool:
+    """FR-07: required when a star bright enough to cause the dip lies within 2.5 arcmin, and
+    also when the star catalog could not be reached, because then such a star cannot be ruled
+    out."""
+    return neighbors is None or any(n.could_cause_dip for n in neighbors)
+
+
+def _standard_reason(neighbors: Neighbors) -> str:
+    """Why the test is run. Only asked when the test is required."""
+    bright = _bright(neighbors)
+    if bright is None:
+        return (
+            "The star catalog could not be reached, so a bright nearby star cannot be ruled "
+            "out and we check which star the dip comes from (FR-07)."
+        )
+    closest = min(bright, key=lambda n: n.star.separation_arcsec)
+    return (
+        f"TIC {closest.star.tic_id}, {closest.star.separation_arcsec:.0f} arcsec away, is bright "
+        "enough to cause the dip, so we first check which star the dip comes from (FR-07)."
+    )
+
+
+def _run(ctx: CheckContext) -> CheckResult:
+    measurement = ctx.sources.light_curves.centroid(ctx.entry)
+    return centroid_check(measurement, _bright(ctx.neighbors), ctx.reason)
+
+
+SPEC = CheckSpec(
+    check=Check.CENTROID,
+    family=Family.SOURCE,
+    looks_for="does the light centre move during the dip? A shift means the dip comes from a "
+    "nearby star.",
+    cause="a nearby star (the dip comes from another star whose light falls into the same pixels)",
+    settle_by="High-resolution imaging or seeing-limited photometry from the ground, to see "
+    "which nearby star dims.",
+    standard_reason=_standard_reason,
+    not_needed_reason="No star within 2.5 arcmin is bright enough to cause the dip, so the "
+    "centroid test is not needed (FR-07).",
+    required_when=_required,
+    run=_run,
+)

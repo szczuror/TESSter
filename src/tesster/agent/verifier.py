@@ -23,6 +23,7 @@ from tesster.investigation import Investigation, StepError
 from tesster.models import Check, CheckStatus, PaperStance, Verdict
 from tesster.sources import DataSources
 from tesster.vetting.checks import NEARBY_RADIUS_ARCMIN
+from tesster.vetting.registry import SPECS
 
 pydantic_ai.BANNER_ENABLED = False
 
@@ -174,16 +175,18 @@ def find_nearby_stars(ctx: RunContext[VerifierDeps]) -> NeighborsForAgent:
     )
 
 
-@verifier_agent.tool(retries=2)
+def run_check_description() -> str:
+    """What the model reads about run_check: every test in the registry and what it looks for."""
+    tests = "\n".join(f"- {check.value}: {spec.looks_for}" for check, spec in SPECS.items())
+    return f"Run one verification test and record why it was run.\n\nTests:\n{tests}"
+
+
+@verifier_agent.tool(retries=2, description=run_check_description())
 def run_check(ctx: RunContext[VerifierDeps], check: Check, reason: str) -> CheckResultForAgent:
     """Run one verification test and record why it was run.
 
-    Tests:
-    - centroid: does the light centre move during the dip? A shift means the dip comes from a
-      nearby star.
-    - odd_even_depth: are odd and even dips equally deep? Two eclipsing stars often alternate.
-    - secondary_eclipse: is there a second, shallower dip between the main dips?
-    - companion_size: is the transiting object small enough to be a planet?
+    The description the model sees comes from run_check_description. This docstring gives only
+    the descriptions of the arguments.
 
     Args:
         check: The test to run.

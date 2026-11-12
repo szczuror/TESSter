@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import assert_never
 
 from tesster.models import (
     CatalogEntry,
@@ -24,7 +23,9 @@ from tesster.models import (
 )
 from tesster.sources import DataSources, SourceUnavailableError
 from tesster.vetting import checks
-from tesster.vetting.verdict import Decision, decide, required_checks
+from tesster.vetting.registry import required_checks, spec_for
+from tesster.vetting.spec import CheckContext
+from tesster.vetting.verdict import Decision, decide
 
 SAFETY_NET = "safety net"
 """Actor name for steps the pipeline runs because the agent did not."""
@@ -231,23 +232,10 @@ def run_check(
 
 
 def _measure(inv: Investigation, sources: DataSources, check: Check, reason: str) -> CheckResult:
-    """Run one check on the data. Raises SourceUnavailableError if the light curves are out."""
-    entry = inv.entry
-    match check:
-        case Check.CENTROID:
-            # None tells the test that the star catalog could not be reached.
-            neighbors = None if inv.neighbors is None else inv.bright_neighbors
-            return checks.centroid_check(sources.light_curves.centroid(entry), neighbors, reason)
-        case Check.ODD_EVEN:
-            return checks.odd_even_check(sources.light_curves.transit_metrics(entry), reason)
-        case Check.SECONDARY_ECLIPSE:
-            return checks.secondary_eclipse_check(
-                sources.light_curves.transit_metrics(entry), reason
-            )
-        case Check.COMPANION_SIZE:
-            return checks.companion_size_check(entry, reason)
-        case _:
-            assert_never(check)
+    """Run one check on the data. Raises SourceUnavailableError if a source it needs is out."""
+    # The neighbours are None when the star catalog could not be reached, which tests may use.
+    context = CheckContext(entry=inv.entry, neighbors=inv.neighbors, sources=sources, reason=reason)
+    return spec_for(check).run(context)
 
 
 def skip_check(

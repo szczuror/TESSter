@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 
 from tesster.models import CatalogEntry, Check, CheckResult, CheckStatus
+from tesster.vetting.spec import CheckContext, CheckSpec, Family, always
 
 EARTH_RADII_PER_SUN_RADIUS = 109.1
 EARTH_RADII_PER_JUPITER_RADIUS = 11.21
@@ -47,3 +48,19 @@ def companion_size_check(candidate: CatalogEntry, reason: str) -> CheckResult:
         f"({radius_jupiter:.2f} Jupiter radii), a size planets can have.",
         sources=[candidate.source],
     )
+
+
+def _run(ctx: CheckContext) -> CheckResult:
+    return companion_size_check(ctx.entry, ctx.reason)
+
+
+SPEC = CheckSpec(
+    check=Check.COMPANION_SIZE,
+    family=Family.ECLIPSING_BINARY,
+    looks_for="is the transiting object small enough to be a planet?",
+    cause="a star rather than a planet (the transiting object is too big to be a planet)",
+    settle_by="A spectrum of the host star, to measure its radius.",
+    standard_reason="Always run: an object too big to be a planet must be a star (FR-06).",
+    required_when=always,
+    run=_run,
+)
