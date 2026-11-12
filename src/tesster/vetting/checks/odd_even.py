@@ -11,7 +11,7 @@ from tesster.vetting.checks.common import (
     significance,
     without_usable_error,
 )
-from tesster.vetting.spec import CheckContext, CheckSpec, Family, always
+from tesster.vetting.spec import CheckContext, CheckSpec, Family, Weight, always
 
 
 def odd_even_check(metrics: TransitMetrics | None, reason: str) -> CheckResult:
@@ -66,5 +66,6 @@ SPEC = CheckSpec(
     standard_reason="Always run: two stars eclipsing each other can mimic a transit and often "
     "make alternating deeper and shallower dips (FR-06).",
     required_when=always,
+    weight=Weight.DECISIVE,
     run=_run,
 )

@@ -60,6 +60,13 @@ uv run ruff format       # format
 
 CI runs the same checks on every pull request.
 
+### Adding a verification test
+
+1. Add a member and its label to `Check` in `src/tesster/models.py`.
+2. Write the test in a new module in `src/tesster/vetting/checks/`, with a `SPEC` that says what it looks for, its likely cause, what would settle it and how to run it. A new test is *supporting* by default: its result never changes the verdict.
+3. List the `SPEC` in `src/tesster/vetting/registry.py`. The order there is the order tests run in and failures are reported in.
+4. Add unit tests in `tests/test_checks.py`.
+
 ## Project structure
 
 ```
@@ -71,7 +78,7 @@ src/tesster/
   investigation.py  state of a check and the steps shared by the agent and the standard procedure
   report.py         Markdown reports
   agent/            LLM agents (Pydantic AI): instructions, the verifier with its tools, follow-up questions
-  vetting/          verification tests and the verdict rule, plain code without an LLM
+  vetting/          verification tests (one module each), their registry and the verdict rule, no LLM
   sources/          interfaces to outside archives; placeholder implementation with fixtures
 tests/              unit tests, end-to-end tests offline, agent tests with a scripted fake model
 ```

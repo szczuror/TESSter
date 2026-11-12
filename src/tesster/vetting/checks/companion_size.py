@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 
 from tesster.models import CatalogEntry, Check, CheckResult, CheckStatus
-from tesster.vetting.spec import CheckContext, CheckSpec, Family, always
+from tesster.vetting.spec import CheckContext, CheckSpec, Family, Weight, always
 
 EARTH_RADII_PER_SUN_RADIUS = 109.1
 EARTH_RADII_PER_JUPITER_RADIUS = 11.21
@@ -62,5 +62,6 @@ SPEC = CheckSpec(
     settle_by="A spectrum of the host star, to measure its radius.",
     standard_reason="Always run: an object too big to be a planet must be a star (FR-06).",
     required_when=always,
+    weight=Weight.DECISIVE,
     run=_run,
 )

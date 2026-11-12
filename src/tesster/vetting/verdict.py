@@ -10,16 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from tesster.models import Check, CheckResult, CheckStatus, Verdict
-from tesster.vetting.registry import SPECS, priority, spec_for
-from tesster.vetting.registry import required_checks as required_checks
-from tesster.vetting.spec import Family
-
-# Views of the registry under their old names. They go away once the tests use the registry.
-ECLIPSING_BINARY_CHECKS = tuple(
-    check for check, spec in SPECS.items() if spec.family is Family.ECLIPSING_BINARY
-)
-CAUSES = {check: spec.cause for check, spec in SPECS.items()}
-SETTLE_BY = {check: spec.settle_by for check, spec in SPECS.items()}
+from tesster.vetting.registry import priority, spec_for
+from tesster.vetting.spec import Family, Weight
 
 NEARBY_ECLIPSING_BINARY = (
     "a nearby eclipsing binary (another star in the same pixels is a pair of stars eclipsing "
@@ -43,12 +35,20 @@ class Decision:
 
 def decide(results: list[CheckResult], required: list[Check]) -> Decision:
     """FR-11: *false positive* if any test failed, *likely planet* if every required test
-    passed, *inconclusive* otherwise."""
+    passed, *inconclusive* otherwise.
+
+    A failed supporting test does not count: it is shown in the report but leaves the verdict
+    as it is.
+    """
     by_check = {r.check: r for r in results}
     not_run = [c for c in required if c not in by_check]
 
     failed = sorted(
-        (r for r in results if r.status is CheckStatus.FAILED),
+        (
+            r
+            for r in results
+            if r.status is CheckStatus.FAILED and spec_for(r.check).weight is Weight.DECISIVE
+        ),
         key=lambda r: priority(r.check),
     )
     if failed:

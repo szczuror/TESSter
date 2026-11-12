@@ -10,7 +10,7 @@ from tesster.models import (
     NeighborAssessment,
 )
 from tesster.vetting.checks.common import SIGMA_LIMIT, significance, without_usable_error
-from tesster.vetting.spec import CheckContext, CheckSpec, Family, Neighbors
+from tesster.vetting.spec import CheckContext, CheckSpec, Family, Neighbors, Weight
 
 CENTROID_PRECISION_FRACTION = 1 / 3
 """The centroid must be measured to better than this fraction of the distance to the neighbor."""
@@ -132,5 +132,6 @@ SPEC = CheckSpec(
     not_needed_reason="No star within 2.5 arcmin is bright enough to cause the dip, so the "
     "centroid test is not needed (FR-07).",
     required_when=_required,
+    weight=Weight.DECISIVE,
     run=_run,
 )

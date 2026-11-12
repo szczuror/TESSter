@@ -9,18 +9,12 @@ from tesster.models import (
     Source,
     Verdict,
 )
-from tesster.vetting.verdict import (
-    CAUSES,
-    ECLIPSING_BINARY_CHECKS,
-    NEARBY_ECLIPSING_BINARY,
-    SETTLE_BY,
-    decide,
-    required_checks,
-)
+from tesster.vetting.registry import required_checks, spec_for
+from tesster.vetting.verdict import NEARBY_ECLIPSING_BINARY, decide
 
 P, F, U, S = CheckStatus.PASSED, CheckStatus.FAILED, CheckStatus.UNCLEAR, CheckStatus.SKIPPED
-EB_ONLY = list(ECLIPSING_BINARY_CHECKS)
-WITH_CENTROID = [Check.CENTROID, *ECLIPSING_BINARY_CHECKS]
+EB_ONLY = [Check.ODD_EVEN, Check.SECONDARY_ECLIPSE, Check.COMPANION_SIZE]
+WITH_CENTROID = [Check.CENTROID, *EB_ONLY]
 
 
 def result(check: Check, status: CheckStatus) -> CheckResult:
@@ -64,7 +58,7 @@ class TestVerdictRule:
         results = [result(Check.CENTROID, status), *[result(c, P) for c in EB_ONLY]]
         decision = decide(results, WITH_CENTROID)
         assert decision.verdict is Verdict.INCONCLUSIVE
-        assert decision.settle_by == [SETTLE_BY[Check.CENTROID]]  # FR-13
+        assert decision.settle_by == [spec_for(Check.CENTROID).settle_by]  # FR-13
 
     def test_required_test_not_run_is_inconclusive(self):
         decision = decide([result(Check.ODD_EVEN, P)], EB_ONLY)
@@ -77,7 +71,7 @@ class TestCause:
 
     def test_failed_centroid_points_to_a_nearby_star(self):
         decision = decide([result(Check.CENTROID, F)], WITH_CENTROID)
-        assert decision.cause == CAUSES[Check.CENTROID]
+        assert decision.cause == spec_for(Check.CENTROID).cause
 
     def test_failed_odd_even_points_to_an_eclipsing_binary(self):
         decision = decide([result(Check.ODD_EVEN, F)], EB_ONLY)
@@ -94,7 +88,7 @@ class TestCause:
     def test_cause_and_reason_do_not_depend_on_the_order_the_tests_ran_in(self):
         odd_even, size = result(Check.ODD_EVEN, F), result(Check.COMPANION_SIZE, F)
         assert decide([odd_even, size], EB_ONLY) == decide([size, odd_even], EB_ONLY)
-        assert decide([size, odd_even], EB_ONLY).cause == CAUSES[Check.ODD_EVEN]
+        assert decide([size, odd_even], EB_ONLY).cause == spec_for(Check.ODD_EVEN).cause
 
     def test_template_reason_names_every_failed_test(self):
         decision = decide([result(Check.COMPANION_SIZE, F), result(Check.ODD_EVEN, F)], EB_ONLY)

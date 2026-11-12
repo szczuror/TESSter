@@ -26,6 +26,15 @@ class Family(StrEnum):
     """The dip may come from two stars eclipsing each other (FR-06)."""
 
 
+class Weight(StrEnum):
+    """How much a test's result counts in the verdict rule (FR-11)."""
+
+    DECISIVE = "decisive"
+    """A failure makes the verdict *false positive*."""
+    SUPPORTING = "supporting"
+    """The result is shown in the report but never changes the verdict."""
+
+
 def always(neighbors: Neighbors) -> bool:
     return True
 
@@ -63,6 +72,15 @@ class CheckSpec:
     """Whether every verdict needs this test for this candidate."""
     not_needed_reason: str | None = None
     """Why the standard procedure skips the test when it is not required. None: it says nothing."""
+    weight: Weight = Weight.SUPPORTING
+    """A new test starts as supporting, so it cannot change verdicts until we decide it should."""
+
+    def __post_init__(self) -> None:
+        # A required test must pass for *likely planet*, so it would change the verdict.
+        if self.weight is Weight.SUPPORTING and (
+            self.required_when(None) or self.required_when([])
+        ):
+            raise ValueError(f"{self.check.value}: a supporting test cannot be required.")
 
     def reason(self, neighbors: Neighbors) -> str:
         """The standard reason for this candidate."""
