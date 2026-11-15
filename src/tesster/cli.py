@@ -21,7 +21,7 @@ from tesster.models import NotChecked, Report
 from tesster.pipeline import ConfigurationError, check_candidate, check_many
 from tesster.report import render_report, render_summary, render_trace
 from tesster.sources import build_sources
-from tesster.sources.fake import FixtureSources
+from tesster.sources.reference import REFERENCE_CANDIDATES
 
 app = typer.Typer(
     help="TESSter: checks whether a TESS candidate (TOI) looks like a planet or a false positive.",
@@ -131,15 +131,16 @@ def check(
 
 @app.command()
 def samples() -> None:
-    """List the placeholder candidates of this version and what each one shows."""
-    table = Table(title="Placeholder candidates (made-up data)")
+    """List real candidates to try, with what follow-up observations found for each."""
+    table = Table(title="Reference candidates (real TOIs)")
     table.add_column("TOI", no_wrap=True)
-    table.add_column("Scenario")
-    table.add_column("Expected verdict", no_wrap=True)
-    for toi, scenario, expected in FixtureSources().scenarios():
-        table.add_row(toi, scenario, expected)
+    table.add_column("What it is")
+    table.add_column("What it shows")
+    for candidate in REFERENCE_CANDIDATES:
+        table.add_row(candidate.toi, candidate.known_as, candidate.shows)
     console.print(table)
-    console.print("Try: tesster check TOI-90003.01 --offline")
+    console.print("What each one is comes from ExoFOP-TESS, read on 2026-11-15.")
+    console.print("Try: tesster check TOI-236.01 --offline")
 
 
 def _save(folder: Path, outcomes: Sequence[Report | NotChecked], reports: Sequence[Report]) -> None:

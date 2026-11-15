@@ -14,7 +14,7 @@ Given a candidate's TOI number, the agent looks the candidate up in the catalogs
 
 An LLM runs the check through tool calls, but code computes the verdict from the test results (FR-11), so the same results always give the same verdict.
 
-> **Version 0.1 uses placeholder data.** The catalogs, papers, star catalog and light-curve measurements come from made-up fixtures (`TOI-90001.01` to `TOI-90005.01`). Real archives come next.
+> **Real archives are being connected.** The candidate comes from the TOI table of the [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/). Papers, the star catalog and light curves are not connected yet: the report lists them under *Problems and missing data*, and until they are, most verdicts are *inconclusive*. The made-up candidates `TOI-90001.01` to `TOI-90005.01` are used only by the tests.
 
 ## Setup
 
@@ -40,15 +40,17 @@ An LLM runs the check through tool calls, but code computes the verdict from the
 ## Usage
 
 ```bash
-uv run tesster samples                               # list the placeholder candidates
-uv run tesster check TOI-90003.01                    # check one candidate with the LLM agent
-uv run tesster check TOI-90003.01 --verbose          # also show every tool call and the token usage
-uv run tesster check TOI-90003.01 --chat             # ask follow-up questions about the report
-uv run tesster check TOI-90001.01 TOI-90002.01 TOI-90004.01   # several candidates, likely planets first
-uv run tesster check TOI-90004.01 --offline          # standard procedure without an LLM (no key needed)
-uv run tesster check TOI-90005.01 --blind            # hide catalog status, names and papers (evaluation)
-uv run tesster check TOI-90001.01 --out reports      # also save the report as Markdown
+uv run tesster samples                               # list real candidates to try
+uv run tesster check TOI-270.01                      # check one candidate with the LLM agent
+uv run tesster check TOI-270.01 --verbose            # also show every tool call and the token usage
+uv run tesster check TOI-270.01 --chat               # ask follow-up questions about the report
+uv run tesster check TOI-270.01 TOI-236.01 TOI-1285.01   # several candidates, likely planets first
+uv run tesster check TOI-236.01 --offline            # standard procedure without an LLM (no key needed)
+uv run tesster check TOI-270.01 --blind              # hide catalog status, names and papers (evaluation)
+uv run tesster check TOI-270.01 --out reports        # also save the report as Markdown
 ```
+
+Every check reads the online archives, so it needs a network connection. `--offline` only turns the LLM off.
 
 ## Development
 
@@ -79,9 +81,9 @@ src/tesster/
   report.py         Markdown reports
   agent/            LLM agents (Pydantic AI): instructions, the verifier with its tools, follow-up questions
   vetting/          verification tests (one module each), their registry and the verdict rule, no LLM
-  sources/          interfaces to outside archives; placeholder implementation with fixtures
+  sources/          outside archives: the NASA Exoplanet Archive catalog, stand-ins for the sources not connected yet, fixtures for the tests
 tests/              unit tests, end-to-end tests offline, agent tests with a scripted fake model
 ```
 
-Planned next: real archives in `sources/` (NASA Exoplanet Archive, ExoFOP, NASA ADS, arXiv, MAST) with light-curve analysis, an MCP server exposing the data sources, RAG over papers and vetting knowledge, and an evaluation suite (`evals/`) for NFR-01 to NFR-04.
+Planned next: the remaining archives in `sources/` (the TIC star catalog and TESS light curves at MAST, NASA ADS and arXiv) with light-curve analysis, an MCP server exposing the data sources, RAG over papers and vetting knowledge, and an evaluation suite (`evals/`) for NFR-01 to NFR-04.
 

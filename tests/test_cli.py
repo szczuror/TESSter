@@ -3,7 +3,9 @@ from helpers import TOI_700_ROW, archive_answering
 from typer.testing import CliRunner
 
 from tesster.cli import app
+from tesster.models import parse_toi
 from tesster.sources import build_sources, fake_sources
+from tesster.sources.reference import REFERENCE_CANDIDATES
 
 runner = CliRunner()
 
@@ -54,10 +56,19 @@ def test_candidate_missing_from_the_online_catalog_is_explained(monkeypatch):
     assert "No candidate TOI-99999.01" in result.output
 
 
-def test_samples_lists_the_placeholder_candidates():
+def test_samples_lists_the_reference_candidates():
     result = runner.invoke(app, ["samples"])
     assert result.exit_code == 0
-    assert "TOI-90003.01" in result.output
+    for candidate in REFERENCE_CANDIDATES:
+        assert candidate.toi in result.output
+    assert "TOI-9000" not in result.output  # the placeholder candidates are for tests only
+
+
+def test_reference_candidates_are_distinct_toi_numbers():
+    tois = [str(parse_toi(candidate.toi)) for candidate in REFERENCE_CANDIDATES]
+    assert tois == [candidate.toi for candidate in REFERENCE_CANDIDATES]
+    assert len(set(tois)) == len(tois)
+    assert 5 <= len(tois) <= 8
 
 
 def test_offline_check_prints_the_report():
