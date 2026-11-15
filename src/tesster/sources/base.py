@@ -1,8 +1,8 @@
 """Interfaces to the supporting actors from docs/use-cases.md.
 
-Each outside system is a Protocol, so v1 can use placeholder data and later versions can plug
-in the real archives (NASA Exoplanet Archive, ExoFOP, NASA ADS, arXiv, MAST) without touching
-the rest of the code.
+Each outside system is a Protocol, so the online archives (NASA Exoplanet Archive, ExoFOP,
+NASA ADS, arXiv, MAST) and the test fixtures can be swapped without touching the rest of the
+code.
 """
 
 from __future__ import annotations
@@ -20,6 +20,10 @@ from tesster.models import (
     TransitMetrics,
 )
 
+PAPER_ARCHIVE_NAME = "Paper archive (NASA ADS / arXiv)"
+STAR_CATALOG_NAME = "Star catalog (TIC at MAST)"
+LIGHT_CURVE_ARCHIVE_NAME = "Light-curve archive (TESS data at MAST)"
+
 
 class SourceError(Exception):
     """Base class for problems with outside sources."""
@@ -31,6 +35,18 @@ class CandidateNotFoundError(SourceError):
         self.toi = toi
 
 
+class CandidateIncompleteError(SourceError):
+    """The catalog lists the candidate without a value every check needs (FR-02)."""
+
+    def __init__(self, toi: ToiId, missing: Sequence[str]) -> None:
+        super().__init__(
+            f"The exoplanet catalog lists {toi} without its {_join(missing)}, so it cannot be "
+            "checked."
+        )
+        self.toi = toi
+        self.missing = list(missing)
+
+
 class SourceUnavailableError(SourceError):
     """An outside source could not be reached (UC-01 *a)."""
 
@@ -40,9 +56,30 @@ class SourceUnavailableError(SourceError):
         self.detail = detail
 
 
+class SourceNotConnectedError(SourceUnavailableError):
+    """A source this version does not read yet.
+
+    It counts as unavailable, so the report says the data are missing. An empty result would
+    claim that there is nothing to find.
+    """
+
+    def __init__(self, source: str) -> None:
+        detail = "not connected in this version of TESSter yet"
+        SourceError.__init__(self, f"{source} is {detail}")
+        self.source = source
+        self.detail = detail
+
+
+def _join(items: Sequence[str]) -> str:
+    if len(items) <= 1:
+        return "".join(items)
+    return ", ".join(items[:-1]) + " and " + items[-1]
+
+
 class ExoplanetCatalog(Protocol):
     def get_candidate(self, toi: ToiId) -> CatalogEntry:
-        """Return the catalog entry, or raise CandidateNotFoundError / SourceUnavailableError."""
+        """Return the catalog entry, or raise CandidateNotFoundError, CandidateIncompleteError
+        or SourceUnavailableError."""
         ...
 
 
@@ -79,4 +116,4 @@ class DataSources:
     stars: StarCatalog
     light_curves: LightCurveArchive
     placeholder: bool = False
-    """True when the data are made up (v1 fixtures)."""
+    """True when the data are made up (the test fixtures)."""

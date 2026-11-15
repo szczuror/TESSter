@@ -1134,6 +1134,7 @@ name = "tesster"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "httpx" },
     { name = "pydantic-ai-slim", extra = ["anthropic", "google", "openai"] },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
@@ -1149,6 +1150,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "pydantic-ai-slim", extras = ["anthropic", "google", "openai"], specifier = ">=2.66.0" },
     { name = "pydantic-settings", specifier = ">=2.16.2" },
     { name = "python-dotenv", specifier = ">=1.2.4" },

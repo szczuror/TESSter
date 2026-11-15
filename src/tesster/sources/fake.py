@@ -24,14 +24,13 @@ from tesster.models import (
     parse_toi,
 )
 from tesster.sources.base import (
+    LIGHT_CURVE_ARCHIVE_NAME,
+    PAPER_ARCHIVE_NAME,
+    STAR_CATALOG_NAME,
     CandidateNotFoundError,
     DataSources,
     SourceUnavailableError,
 )
-
-PAPER_ARCHIVE_NAME = "Paper archive (NASA ADS / arXiv)"
-STAR_CATALOG_NAME = "Star catalog (TIC at MAST)"
-LIGHT_CURVE_ARCHIVE_NAME = "Light-curve archive (TESS data at MAST)"
 
 
 def load_fixtures() -> dict[str, Any]:
