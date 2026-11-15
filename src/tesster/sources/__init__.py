@@ -1,6 +1,5 @@
 """Outside data sources (supporting actors in docs/use-cases.md)."""
 
-from tesster.sources import http
 from tesster.sources.base import (
     CandidateIncompleteError,
     CandidateNotFoundError,
@@ -23,7 +22,7 @@ def build_sources() -> DataSources:
     """
     not_connected = NotConnected()
     return DataSources(
-        catalog=ToiCatalog(http.new_client()),
+        catalog=ToiCatalog(),
         papers=not_connected,
         stars=not_connected,
         light_curves=not_connected,

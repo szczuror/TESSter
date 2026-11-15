@@ -1,4 +1,3 @@
-import httpx
 import pydantic_ai
 import pytest
 from pydantic_ai import models
@@ -14,17 +13,18 @@ models.ALLOW_MODEL_REQUESTS = False  # no test may call a real LLM API
 def no_network(monkeypatch):
     """No test may reach an online archive.
 
-    The archives get their HTTP client from one function, which fails here. A test of an
-    archive passes its own client with canned answers (helpers.archive_client).
+    astroquery sends everything through ``requests``, which fails here. A test of an archive
+    gives it a canned answer instead (helpers.toi_table).
     """
 
-    def refuse() -> httpx.Client:
-        raise AssertionError(
-            "A test tried to open a connection to an online archive. Use the fixture sources, "
-            "or a client with canned answers (helpers.archive_client)."
+    def refuse(session, request, **kwargs):
+        # pytest.fail is not an Exception, so astroquery cannot turn it into one of its errors.
+        pytest.fail(
+            f"A test tried to reach an online archive ({request.url}). Use the fixture sources, "
+            "or a canned answer (helpers.toi_table)."
         )
 
-    monkeypatch.setattr("tesster.sources.http.new_client", refuse)
+    monkeypatch.setattr("requests.sessions.Session.send", refuse)
 
 
 @pytest.fixture

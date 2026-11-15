@@ -81,7 +81,7 @@ src/tesster/
   report.py         Markdown reports
   agent/            LLM agents (Pydantic AI): instructions, the verifier with its tools, follow-up questions
   vetting/          verification tests (one module each), their registry and the verdict rule, no LLM
-  sources/          outside archives: the NASA Exoplanet Archive catalog, stand-ins for the sources not connected yet, fixtures for the tests
+  sources/          outside archives, read with astroquery: the NASA Exoplanet Archive catalog, stand-ins for the sources not connected yet, fixtures for the tests
 tests/              unit tests, end-to-end tests offline, agent tests with a scripted fake model
 ```
 

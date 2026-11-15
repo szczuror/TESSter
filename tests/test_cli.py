@@ -1,5 +1,6 @@
 import pytest
-from helpers import TOI_700_ROW, archive_answering
+from astroquery.ipac.nexsci.nasa_exoplanet_archive import NasaExoplanetArchive
+from helpers import TOI_700_ROW, toi_table
 from typer.testing import CliRunner
 
 from tesster.cli import app
@@ -24,10 +25,15 @@ def placeholder_data(monkeypatch):
     monkeypatch.setattr("tesster.cli.build_sources", fake_sources)
 
 
+def archive_answers(monkeypatch, *rows: dict) -> None:
+    """Use the real sources, with the archive behind astroquery answering with these rows."""
+    monkeypatch.setattr("tesster.cli.build_sources", build_sources)
+    monkeypatch.setattr(NasaExoplanetArchive, "query_criteria", lambda **criteria: toi_table(*rows))
+
+
 def test_check_reads_the_online_archives_without_any_flag(monkeypatch, tmp_path):
     """Real data are the default: no option selects them."""
-    monkeypatch.setattr("tesster.cli.build_sources", build_sources)
-    monkeypatch.setattr("tesster.sources.http.new_client", lambda: archive_answering(TOI_700_ROW))
+    archive_answers(monkeypatch, TOI_700_ROW)
 
     result = runner.invoke(app, ["check", "TOI-700.01", "--offline", "--out", str(tmp_path)])
 
@@ -40,15 +46,8 @@ def test_check_reads_the_online_archives_without_any_flag(monkeypatch, tmp_path)
     assert "exoplanetarchive.ipac.caltech.edu/TAP/sync" in report
 
 
-def test_tests_cannot_open_a_connection_to_the_archives():
-    """The guard in conftest.py: without canned answers the default sources cannot be built."""
-    with pytest.raises(AssertionError, match="online archive"):
-        build_sources()
-
-
 def test_candidate_missing_from_the_online_catalog_is_explained(monkeypatch):
-    monkeypatch.setattr("tesster.cli.build_sources", build_sources)
-    monkeypatch.setattr("tesster.sources.http.new_client", lambda: archive_answering())
+    archive_answers(monkeypatch)
 
     result = runner.invoke(app, ["check", "TOI-99999.01", "--offline"])
 

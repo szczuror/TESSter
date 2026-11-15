@@ -1,14 +1,15 @@
-"""The candidate catalog: the TOI table of the NASA Exoplanet Archive, read through its TAP
-service (UC-01 step 2)."""
+"""The candidate catalog: the TOI table of the NASA Exoplanet Archive, read with astroquery
+(UC-01 step 2)."""
 
 from __future__ import annotations
 
 import math
+import threading
+import warnings
 from collections.abc import Callable
 from datetime import date
-from typing import Any
-
-import httpx
+from typing import TYPE_CHECKING, Any
+from urllib.parse import urlencode
 
 from tesster.models import CatalogEntry, Disposition, Source, ToiId
 from tesster.sources.base import (
@@ -17,8 +18,16 @@ from tesster.sources.base import (
     SourceUnavailableError,
 )
 
+if TYPE_CHECKING:
+    from astropy.table import Table
+
 CATALOG_NAME = "NASA Exoplanet Archive, TOI table"
+TABLE = "toi"
 TAP_URL = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync"
+
+TIME_LIMIT_SECONDS = 60.0
+"""How long one candidate may take. The archive usually answers in a few seconds, but astroquery
+sets no time limit of its own."""
 
 BTJD_ZERO_BJD = 2_457_000.0
 """BTJD, the time scale of TESS data, is BJD minus this number. The catalog gives BJD."""
@@ -37,6 +46,8 @@ COLUMNS = (
     "st_rad",
     "rowupdate",
 )
+"""The numbers are used in the units the archive gives them in: days, hours, ppm, solar radii,
+degrees."""
 
 _NEEDED = {
     "tid": "TIC number",
@@ -54,41 +65,60 @@ The catalog has no period for candidates seen in transit only once."""
 _MUST_BE_POSITIVE = ("pl_orbper", "pl_trandurh", "pl_trandep")
 
 
-class ToiCatalog:
-    """Implements ExoplanetCatalog with one TAP query per candidate."""
+def ask_archive(where: str) -> Table:
+    """Send one query to the TOI table through astroquery, or raise SourceUnavailableError."""
+    # Imported here because astroquery takes about two seconds to load, which commands that
+    # never query the archive should not wait for.
+    import pyvo
+    import requests
+    from astroquery import exceptions as astroquery_errors
+    from astroquery.ipac.nexsci.nasa_exoplanet_archive import NasaExoplanetArchive
 
-    def __init__(self, client: httpx.Client, today: Callable[[], date] = date.today) -> None:
-        self._client = client
+    try:
+        with warnings.catch_warnings():
+            # No rows means the candidate is not in the catalog, which get_candidate reports.
+            warnings.simplefilter("ignore", astroquery_errors.NoResultsWarning)
+            return NasaExoplanetArchive.query_criteria(
+                table=TABLE, select=",".join(COLUMNS), where=where
+            )
+    except (
+        # astroquery turns every failure of the query into InvalidQueryError, network errors
+        # included. The others come from the list of tables it reads before the first query.
+        astroquery_errors.InvalidQueryError,
+        astroquery_errors.RemoteServiceError,
+        astroquery_errors.TimeoutError,
+        pyvo.dal.DALAccessError,
+        requests.RequestException,
+    ) as exc:
+        raise SourceUnavailableError(CATALOG_NAME, _summary(exc)) from exc
+
+
+class ToiCatalog:
+    """Implements ExoplanetCatalog with one query per candidate."""
+
+    def __init__(
+        self,
+        ask: Callable[[str], Table] = ask_archive,
+        today: Callable[[], date] = date.today,
+        time_limit: float = TIME_LIMIT_SECONDS,
+    ) -> None:
+        self._ask = ask
         self._today = today
+        self._time_limit = time_limit
 
     def get_candidate(self, toi: ToiId) -> CatalogEntry:
-        url = query_url(toi)
-        rows = self._rows(url)
-        if not rows:
-            raise CandidateNotFoundError(toi)
-        return self._entry(toi, rows[0], url)
-
-    def _rows(self, url: httpx.URL) -> list[dict[str, Any]]:
+        # ToiId holds two integers, so nothing the user typed reaches the query text.
+        where = f"toi={toi.star}.{toi.candidate:02d}"
         try:
-            response = self._client.get(url)
-            response.raise_for_status()
-            rows = response.json()
-        except httpx.TimeoutException as exc:
-            raise SourceUnavailableError(CATALOG_NAME, "it did not answer in time") from exc
-        except httpx.HTTPStatusError as exc:
-            raise SourceUnavailableError(
-                CATALOG_NAME, f"it answered with HTTP {exc.response.status_code}"
-            ) from exc
-        except httpx.HTTPError as exc:
-            raise SourceUnavailableError(CATALOG_NAME, str(exc) or type(exc).__name__) from exc
-        except ValueError as exc:
-            raise SourceUnavailableError(CATALOG_NAME, "its answer was not JSON") from exc
-        if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
-            raise SourceUnavailableError(CATALOG_NAME, "its answer was not a list of rows")
-        return rows
+            table = _within(self._time_limit, lambda: self._ask(where))
+        except _TimeLimitError:
+            raise SourceUnavailableError(CATALOG_NAME, "it did not answer in time") from None
+        if len(table) == 0:
+            raise CandidateNotFoundError(toi)
+        return self._entry(toi, table[0], where)
 
-    def _entry(self, toi: ToiId, row: dict[str, Any], url: httpx.URL) -> CatalogEntry:
-        numbers = {column: _number(row.get(column)) for column in (*_NEEDED, "st_rad")}
+    def _entry(self, toi: ToiId, row: Any, where: str) -> CatalogEntry:
+        numbers = {column: _number(row[column]) for column in (*_NEEDED, "st_rad")}
         for column in _MUST_BE_POSITIVE:
             if numbers[column] is not None and numbers[column] <= 0:
                 numbers[column] = None
@@ -107,40 +137,84 @@ class ToiCatalog:
             duration_hours=numbers["pl_trandurh"],
             depth_ppm=numbers["pl_trandep"],
             stellar_radius_rsun=radius if radius is not None and radius > 0 else None,
-            disposition=_disposition(row.get("tfopwg_disp")),
-            disposition_date=_day(row.get("rowupdate")),
-            source=Source(name=CATALOG_NAME, url=str(url), retrieved=self._today()),
+            disposition=_disposition(_text(row["tfopwg_disp"])),
+            disposition_date=_day(_text(row["rowupdate"])),
+            source=Source(name=CATALOG_NAME, url=catalog_link(where), retrieved=self._today()),
         )
 
 
-def query_url(toi: ToiId) -> httpx.URL:
-    """The query for one candidate. The report links to it, so the reader sees the same row."""
-    # ToiId holds two integers, so nothing the user typed reaches the query text.
-    query = f"select {','.join(COLUMNS)} from toi where toi={toi.star}.{toi.candidate:02d}"
-    return httpx.URL(TAP_URL, params={"query": query, "format": "json"})
+def catalog_link(where: str) -> str:
+    """An address that shows the same row in a browser. The report links to it (FR-14)."""
+    query = f"select {','.join(COLUMNS)} from {TABLE} where {where}"
+    return f"{TAP_URL}?{urlencode({'query': query, 'format': 'json'})}"
 
 
-def _number(value: object) -> float | None:
-    """The value as a finite number, or None when the catalog leaves it empty."""
-    if value is None or isinstance(value, bool):
+def _number(cell: Any) -> float | None:
+    """A table cell as a plain finite number, or None when the archive has no value.
+
+    A cell with a unit gives its number in that unit. The archive sends NaN for an empty number,
+    which astroquery leaves unmasked.
+    """
+    if getattr(cell, "mask", False):
         return None
+    cell = getattr(cell, "value", cell)
     try:
-        number = float(value)
+        number = float(cell)
     except (TypeError, ValueError):
         return None
     return number if math.isfinite(number) else None
 
 
-def _disposition(value: object) -> Disposition | None:
+def _text(cell: Any) -> str:
+    """A table cell as text. The archive sends an empty string for an empty text."""
+    return "" if getattr(cell, "mask", False) else str(cell)
+
+
+def _disposition(code: str) -> Disposition | None:
     try:
-        return Disposition(value)
+        return Disposition(code)
     except ValueError:
         return None
 
 
-def _day(value: object) -> date | None:
+def _day(timestamp: str) -> date | None:
     """The day of a catalog timestamp such as ``2024-02-15 10:08:02``."""
     try:
-        return date.fromisoformat(str(value)[:10])
+        return date.fromisoformat(timestamp[:10])
     except ValueError:
         return None
+
+
+def _summary(exc: Exception) -> str:
+    """The first line of an error, short enough for one line of the report."""
+    lines = str(exc).strip().splitlines()
+    return lines[0][:200] if lines else type(exc).__name__
+
+
+class _TimeLimitError(Exception):
+    pass
+
+
+def _within[T](seconds: float, call: Callable[[], T]) -> T:
+    """Run a call that has no time limit of its own, and stop waiting after ``seconds``.
+
+    The call runs in a daemon thread. If it does not finish in time, the thread is left behind
+    and ends with the program.
+    """
+    outcome: list[tuple[bool, Any]] = []
+
+    def run() -> None:
+        try:
+            outcome.append((True, call()))
+        except BaseException as exc:  # raised again below, in the caller's thread
+            outcome.append((False, exc))
+
+    thread = threading.Thread(target=run, daemon=True, name="toi-catalog-query")
+    thread.start()
+    thread.join(seconds)
+    if not outcome:
+        raise _TimeLimitError
+    finished, value = outcome[0]
+    if not finished:
+        raise value
+    return value
