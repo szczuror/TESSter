@@ -107,7 +107,8 @@ class Investigation:
 
 
 def load_candidate(inv: Investigation, sources: DataSources) -> CatalogEntry:
-    """UC-01 step 2. Raises CandidateNotFoundError or SourceUnavailableError."""
+    """UC-01 step 2. Raises CandidateNotFoundError, CandidateIncompleteError or
+    SourceUnavailableError."""
     entry = sources.catalog.get_candidate(inv.toi)
     if inv.blind:
         # NFR-01: hide the catalog status and other names, so the check relies on the tests.

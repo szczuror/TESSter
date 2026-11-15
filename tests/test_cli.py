@@ -1,7 +1,9 @@
 import pytest
+from helpers import TOI_700_ROW, archive_answering
 from typer.testing import CliRunner
 
 from tesster.cli import app
+from tesster.sources import build_sources, fake_sources
 
 runner = CliRunner()
 
@@ -10,8 +12,46 @@ runner = CliRunner()
 def no_dotenv(monkeypatch):
     """Keep a developer's local .env and LLM variables out of the tests."""
     monkeypatch.setattr("tesster.config.load_dotenv", lambda *args, **kwargs: False)
-    for name in ("TESSTER_MODEL", "TESSTER_DATA", "VLLM_BASE_URL", "VLLM_API_KEY"):
+    for name in ("TESSTER_MODEL", "VLLM_BASE_URL", "VLLM_API_KEY"):
         monkeypatch.delenv(name, raising=False)
+
+
+@pytest.fixture(autouse=True)
+def placeholder_data(monkeypatch):
+    """``tesster check`` reads the online archives, so these tests give it the fixtures."""
+    monkeypatch.setattr("tesster.cli.build_sources", fake_sources)
+
+
+def test_check_reads_the_online_archives_without_any_flag(monkeypatch, tmp_path):
+    """Real data are the default: no option selects them."""
+    monkeypatch.setattr("tesster.cli.build_sources", build_sources)
+    monkeypatch.setattr("tesster.sources.http.new_client", lambda: archive_answering(TOI_700_ROW))
+
+    result = runner.invoke(app, ["check", "TOI-700.01", "--offline", "--out", str(tmp_path)])
+
+    assert result.exit_code == 0, result.output
+    report = (tmp_path / "TOI-700.01.md").read_text(encoding="utf-8")
+    assert report.startswith("# TOI-700.01: inconclusive")
+    assert "Placeholder data" not in report
+    assert "confirmed planet (CP), catalog entry last updated 2024-02-15" in report
+    assert "TIC 150428135" in report
+    assert "exoplanetarchive.ipac.caltech.edu/TAP/sync" in report
+
+
+def test_tests_cannot_open_a_connection_to_the_archives():
+    """The guard in conftest.py: without canned answers the default sources cannot be built."""
+    with pytest.raises(AssertionError, match="online archive"):
+        build_sources()
+
+
+def test_candidate_missing_from_the_online_catalog_is_explained(monkeypatch):
+    monkeypatch.setattr("tesster.cli.build_sources", build_sources)
+    monkeypatch.setattr("tesster.sources.http.new_client", lambda: archive_answering())
+
+    result = runner.invoke(app, ["check", "TOI-99999.01", "--offline"])
+
+    assert result.exit_code == 1
+    assert "No candidate TOI-99999.01" in result.output
 
 
 def test_samples_lists_the_placeholder_candidates():

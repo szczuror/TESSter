@@ -27,7 +27,7 @@ def _closest_possible_neighbor(
     if bright_neighbors is None:
         return TESS_PIXEL_ARCSEC, (
             f"a star one TESS pixel ({TESS_PIXEL_ARCSEC:.0f} arcsec) away, which cannot be "
-            "ruled out because the star catalog could not be reached"
+            "ruled out because the star catalog was not available"
         )
     if not bright_neighbors:
         return None
@@ -105,7 +105,7 @@ def _standard_reason(neighbors: Neighbors) -> str:
     bright = _bright(neighbors)
     if bright is None:
         return (
-            "The star catalog could not be reached, so a bright nearby star cannot be ruled "
+            "The star catalog was not available, so a bright nearby star cannot be ruled "
             "out and we check which star the dip comes from (FR-07)."
         )
     closest = min(bright, key=lambda n: n.star.separation_arcsec)

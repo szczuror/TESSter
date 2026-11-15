@@ -1,3 +1,5 @@
+from helpers import catalog_only, make_entry
+
 from tesster.models import CheckStatus, NotChecked, Report
 from tesster.pipeline import check_candidate, check_many
 from tesster.report import BLIND_BANNER, PLACEHOLDER_BANNER, render_report, render_summary
@@ -41,6 +43,25 @@ def test_placeholder_and_blind_banners(sources, settings):
     blind = render_report(offline("TOI-90001.01", sources, settings, blind=True))
     assert BLIND_BANNER in blind
     assert "Catalog status: hidden (blind test)" in blind
+
+
+def test_report_says_which_data_are_missing_when_a_source_is_not_connected(settings):
+    markdown = render_report(offline("TOI-1234.01", catalog_only(make_entry()), settings))
+
+    assert "No papers mention this candidate" not in markdown  # nobody looked, so it is unknown
+    assert "Papers could not be searched (see Problems)." in markdown
+    assert "The star catalog was not available (see Problems)." in markdown
+    assert "Paper archive (NASA ADS / arXiv) is not connected in this version" in markdown
+    assert PLACEHOLDER_BANNER not in markdown
+
+
+def test_catalog_status_is_shown_with_the_date_of_the_catalog_entry(sources, settings):
+    """FR-03."""
+    markdown = render_report(offline("TOI-90001.01", sources, settings))
+    assert (
+        "- Catalog status: planet candidate (PC), catalog entry last updated 2026-09-15."
+        in markdown
+    )
 
 
 def test_summary_lists_inputs_that_were_not_checked(sources, settings):

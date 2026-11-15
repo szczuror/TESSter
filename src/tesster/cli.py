@@ -50,7 +50,12 @@ def _use_utf8_output() -> None:
 def check(
     tois: Annotated[list[str], typer.Argument(help="One or more TOI numbers, e.g. TOI-1234.01.")],
     offline: Annotated[
-        bool, typer.Option("--offline", help="Run the standard procedure without an LLM.")
+        bool,
+        typer.Option(
+            "--offline",
+            help="Run the standard procedure without an LLM. The data still come from the "
+            "online archives.",
+        ),
     ] = False,
     blind: Annotated[
         bool,
@@ -87,7 +92,7 @@ def check(
         )
         raise typer.Exit(2)
 
-    sources = build_sources(settings.data)
+    sources = build_sources()
     options = {"sources": sources, "settings": settings, "offline": offline, "blind": blind}
     try:
         if len(tois) == 1:

@@ -1,8 +1,7 @@
 """Verification tests (glossary: Verification Test). Plain rules with fixed thresholds, no LLM.
 
-Each test lives in its own module. v1 applies the rules to placeholder measurements. Later
-versions will measure the same numbers from real light curves and pixel data, and the rules
-here stay the same.
+Each test lives in its own module. The rules do not depend on where the measurements come from:
+the catalog, a real light curve and the test fixtures are judged the same way.
 """
 
 from tesster.vetting.checks.centroid import (

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Literal
-
 from dotenv import find_dotenv, load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -22,8 +20,6 @@ class Settings(BaseSettings):
 
     model: str = DEFAULT_MODEL
     """LLM as provider:model, e.g. vllm:gpt-oss_120b or openai:<model>."""
-    data: Literal["fake"] = "fake"
-    """Data sources. Only placeholder data exist in v1."""
     max_requests: int = 25
     """Upper limit of LLM requests for one candidate, a guard against runaway cost."""
     max_tokens: int = 16000

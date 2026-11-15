@@ -1,11 +1,13 @@
 """End-to-end checks with placeholder data and the standard procedure (no LLM)."""
 
 import pytest
+from helpers import catalog_only, make_entry
 
 from tesster.models import Check, CheckStatus, NotChecked, Report, Verdict
 from tesster.pipeline import check_candidate, check_many
-from tesster.sources import DataSources
+from tesster.sources import CandidateIncompleteError, DataSources
 from tesster.sources.fake import FixtureSources, load_fixtures
+from tesster.sources.not_connected import NotConnected
 
 
 def offline(toi: str, sources, settings, **kwargs) -> Report:
@@ -106,6 +108,53 @@ def test_unreachable_light_curve_archive_skips_its_tests_and_check_continues(set
     assert skipped == {Check.ODD_EVEN, Check.SECONDARY_ECLIPSE}
     assert any("Light-curve archive" in p for p in report.problems)
     assert report.verdict is Verdict.INCONCLUSIVE
+
+
+def test_sources_not_connected_yet_are_reported_as_missing_data(settings):
+    report = offline("TOI-1234.01", catalog_only(make_entry()), settings)
+
+    assert not report.placeholder_data
+    assert report.papers is None  # an empty list would say that no paper mentions the candidate
+    assert report.neighbors is None
+    for source in ("Paper archive", "Star catalog", "Light-curve archive"):
+        assert any(source in p and "is not connected" in p for p in report.problems), source
+    # A bright nearby star cannot be ruled out without the star catalog, so the centroid test
+    # is required and comes first (FR-07).
+    assert [(r.check, r.status) for r in report.checks] == [
+        (Check.CENTROID, CheckStatus.SKIPPED),
+        (Check.ODD_EVEN, CheckStatus.SKIPPED),
+        (Check.SECONDARY_ECLIPSE, CheckStatus.SKIPPED),
+        (Check.COMPANION_SIZE, CheckStatus.PASSED),
+    ]
+    assert "is not connected" in report.checks[0].finding
+    assert report.verdict is Verdict.INCONCLUSIVE
+
+
+def test_catalog_alone_can_show_a_companion_too_big_for_a_planet(settings):
+    # A star of 1.47 solar radii with a 2.4 % dip, as the catalog lists TOI-236.01.
+    entry = make_entry(stellar_radius_rsun=1.47459, depth_ppm=23574.8)
+    report = offline("TOI-1234.01", catalog_only(entry), settings)
+
+    assert report.verdict is Verdict.FALSE_POSITIVE
+    assert "a star rather than a planet" in report.cause
+
+
+def test_candidate_the_catalog_lists_without_a_period_is_not_checked(settings):
+    """FR-02: the user is told which value is missing."""
+
+    class WithoutPeriod:
+        def get_candidate(self, toi):
+            raise CandidateIncompleteError(toi, ["orbital period"])
+
+    off = NotConnected()
+    sources = DataSources(catalog=WithoutPeriod(), papers=off, stars=off, light_curves=off)
+    outcome = check_candidate("TOI-125.04", sources=sources, settings=settings, offline=True)
+
+    assert isinstance(outcome, NotChecked)
+    assert outcome.reason == (
+        "The exoplanet catalog lists TOI-125.04 without its orbital period, so it cannot be "
+        "checked."
+    )
 
 
 def test_batch_lists_likely_planets_first_and_unchecked_last(sources, settings):

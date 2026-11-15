@@ -103,7 +103,7 @@ def search_papers(ctx: RunContext[VerifierDeps]) -> list[PaperForAgent] | str:
     if inv.blind:
         return "Papers are hidden in a blind test."
     if papers is None:
-        return "The paper archive could not be reached, so no papers can be listed."
+        return "The paper archive is not available, so no papers can be listed."
     if not papers:
         return "No papers mention this candidate."
     return [
@@ -149,7 +149,7 @@ def find_nearby_stars(ctx: RunContext[VerifierDeps]) -> NeighborsForAgent:
     entry = inv.entry
     must_come_first = Check.CENTROID in inv.required
     if neighbors is None:
-        note = "The star catalog could not be reached, so the centroid test is required."
+        note = "The star catalog is not available, so the centroid test is required."
     elif inv.bright_neighbors:
         note = "At least one star could cause the dip: run the centroid test first."
     else:
@@ -266,11 +266,12 @@ def candidate_prompt(inv: Investigation) -> str:
                 transit,
             ]
         )
-    status = (
-        f"{entry.disposition.label} ({entry.disposition.value}) as of {entry.disposition_date}"
-        if entry.disposition is not None
-        else "not given"
-    )
+    if entry.disposition is None:
+        status = "not given"
+    else:
+        status = f"{entry.disposition.label} ({entry.disposition.value})"
+        if entry.disposition_date is not None:
+            status += f", catalog entry last updated {entry.disposition_date}"
     return "\n".join(
         [
             "Check this transit candidate.",

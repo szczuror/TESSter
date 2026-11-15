@@ -103,6 +103,8 @@ class CatalogEntry(BaseModel):
     stellar_radius_rsun: float | None = None
     disposition: Disposition | None = None
     disposition_date: date | None = None
+    """Day the catalog last updated the candidate's entry (FR-03). The TOI table gives no date
+    for the status alone."""
     aliases: list[str] = []
     """Other names of the object, e.g. the name of a confirmed planet."""
     source: Source
@@ -161,7 +163,7 @@ class NeighborAssessment(BaseModel):
 
 
 class TransitMetrics(BaseModel):
-    """Numbers measured from the light curve. In v1 they come from placeholder data."""
+    """Numbers measured from the light curve."""
 
     odd_depth_ppm: float
     odd_depth_err_ppm: float

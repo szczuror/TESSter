@@ -1,3 +1,4 @@
+import httpx
 import pydantic_ai
 import pytest
 from pydantic_ai import models
@@ -9,8 +10,26 @@ pydantic_ai.BANNER_ENABLED = False
 models.ALLOW_MODEL_REQUESTS = False  # no test may call a real LLM API
 
 
+@pytest.fixture(autouse=True)
+def no_network(monkeypatch):
+    """No test may reach an online archive.
+
+    The archives get their HTTP client from one function, which fails here. A test of an
+    archive passes its own client with canned answers (helpers.archive_client).
+    """
+
+    def refuse() -> httpx.Client:
+        raise AssertionError(
+            "A test tried to open a connection to an online archive. Use the fixture sources, "
+            "or a client with canned answers (helpers.archive_client)."
+        )
+
+    monkeypatch.setattr("tesster.sources.http.new_client", refuse)
+
+
 @pytest.fixture
 def sources() -> DataSources:
+    """The placeholder candidates TOI-90001.01 to TOI-90005.01."""
     return fake_sources()
 
 

@@ -1,8 +1,9 @@
 """Placeholder implementations of all sources, read from fixtures/candidates.json.
 
-The fixtures use made-up TOI numbers (TOI-9000x.01) so they cannot be mistaken for real
-candidates. Source links point to the real services from docs/useful-links.md, and every
-source is marked as placeholder, so reports show a warning banner.
+Only the tests use them: ``tesster check`` reads the online archives. The fixtures use made-up
+TOI numbers (TOI-9000x.01) so they cannot be mistaken for real candidates. Source links point
+to the real services from docs/useful-links.md, and every source is marked as placeholder, so
+reports show a warning banner.
 """
 
 from __future__ import annotations
