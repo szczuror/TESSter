@@ -32,6 +32,8 @@ def tic_table(*rows: dict) -> Table:
         [math.nan if r.get("dstArcSec") is None else r["dstArcSec"] for r in rows],
         dtype="float64",
     )
+    if any("disposition" in r for r in rows):
+        table["disposition"] = np.array([r.get("disposition") or "" for r in rows], dtype="U16")
     return table
 
 
@@ -161,3 +163,18 @@ def test_archive_problems_are_reported_as_unavailable(monkeypatch, error, detail
     with pytest.raises(SourceUnavailableError, match=detail) as raised:
         TicStarCatalog().stars_near(make_entry(), 2.5)
     assert raised.value.source == STAR_CATALOG_NAME
+
+
+def test_duplicate_split_and_artifact_entries_are_not_neighbors():
+    """A TIC duplicate of the target sits next to it with the same brightness, so keeping it
+    would make the centroid test required for no reason (FR-07)."""
+    target = make_entry(tic_id=1)
+    rows = (
+        {"ID": "2", "Tmag": 10.0, "dstArcSec": 1.5, "disposition": "DUPLICATE"},
+        {"ID": "3", "Tmag": 10.2, "dstArcSec": 2.0, "disposition": "SPLIT"},
+        {"ID": "4", "Tmag": 11.0, "dstArcSec": 5.0, "disposition": "artifact"},
+        {"ID": "5", "Tmag": 13.0, "dstArcSec": 25.0},
+    )
+    stars = catalog(answering(*rows)).stars_near(target, 2.5)
+
+    assert [s.tic_id for s in stars] == [5]

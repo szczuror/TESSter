@@ -24,7 +24,13 @@ if TYPE_CHECKING:
 
 MAST_INVOKE_URL = "https://mast.stsci.edu/api/v0/invoke"
 TIC_CONE_SERVICE = "Mast.Catalogs.Tic.Cone"
-COLUMNS = ("ID", "Tmag", "dstArcSec")
+COLUMNS = ("ID", "Tmag", "dstArcSec", "disposition")
+NOT_A_STAR = frozenset({"ARTIFACT", "DUPLICATE", "SPLIT"})
+"""TIC ``disposition`` values of rows that are not a separate real star.
+
+A duplicate or split entry of the target sits next to it with the same brightness, so it would
+look like a bright neighbor that can cause the dip (FR-07).
+"""
 
 
 def ask_tic(ra_deg: float, dec_deg: float, radius_arcmin: float) -> Table:
@@ -83,11 +89,14 @@ class TicStarCatalog:
         if table is None or len(table) == 0:
             return stars
 
+        has_disposition = "disposition" in table.colnames
         for row in table:
             tic_id = _tic_id(row["ID"])
             # Exclude the target by TIC number, not by distance: TOI-table coordinates can
             # lie several arcseconds from the TIC position.
             if tic_id is None or tic_id == candidate.tic_id:
+                continue
+            if has_disposition and _disposition(row["disposition"]) in NOT_A_STAR:
                 continue
             tmag = _number(row["Tmag"])
             separation = _number(row["dstArcSec"])
@@ -130,3 +139,9 @@ def _tic_id(cell: Any) -> int | None:
     except (TypeError, ValueError):
         return None
     return value if value > 0 else None
+
+
+def _disposition(cell: Any) -> str:
+    if getattr(cell, "mask", False):
+        return ""
+    return str(getattr(cell, "value", cell)).strip().upper()
