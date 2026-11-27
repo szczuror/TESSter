@@ -54,7 +54,7 @@ def check(
         typer.Option(
             "--offline",
             help="Run the standard procedure without an LLM. The data still come from the "
-            "online archives.",
+            "online archives, or from the saved answers bundled for the reference candidates.",
         ),
     ] = False,
     blind: Annotated[

@@ -1,0 +1,106 @@
+{
+  "candidate": {
+    "toi": {
+      "star": 562,
+      "candidate": 1
+    },
+    "tic_id": 413248763,
+    "tmag": 8.74094,
+    "ra_deg": 144.007464,
+    "dec_deg": -21.665063,
+    "period_days": 3.9306027,
+    "epoch_btjd": 3011.629018,
+    "duration_hours": 1.196,
+    "depth_ppm": 1048.0,
+    "stellar_radius_rsun": 0.36,
+    "disposition": "CP",
+    "disposition_date": "2023-04-12",
+    "aliases": [
+      "GJ 357 b"
+    ],
+    "source": {
+      "name": "NASA Exoplanet Archive, TOI table",
+      "url": "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+toi%2Ctid%2Ctfopwg_disp%2Cst_tmag%2Cra%2Cdec%2Cpl_orbper%2Cpl_tranmid%2Cpl_trandurh%2Cpl_trandep%2Cst_rad%2Crowupdate+from+toi+where+toi%3D562.01&format=json",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  },
+  "papers": [
+    {
+      "id": "arXiv:2007.10262v3",
+      "title": "GJ 357 b: A Super-Earth Orbiting an Extremely Inactive Host Star",
+      "year": 2020,
+      "abstract": "In this paper we present a deep X-ray observation of the nearby M dwarf GJ 357 and use it to put constraints on the atmospheric evolution of its planet, GJ 357 b. We also analyse the systematic errors in the stellar parameters of GJ 357 in order to see how they affect the perceived planetary properties. We estimate the age of GJ 357 b by comparing the observed X-ray luminosity of its host star, derived from a recent {\\em XMM-Newton} observation {($\\log{L_{\\rm x}}\\,{\\rm [erg/s]} = 25.73$), with $L_{\\rm x} -$ age relations for M dwarfs. We find that GJ 357 presents one of the lowest X-ray activity levels ever measured for an M dwarf, and we put a lower limit on its age of $5$\\,Gyr.} Using this age limit, we perform a backwards reconstruction of the original primordial atmospheric reservoir. Furthermore, by considering the systematic errors in the stellar parameters, we find a range of possible planetary masses, radii, and densities. From the backwards reconstruction of GJ 357 b's irradiation history we find that the upper limit of its initial primordial atmospheric mass is $\\sim \\rm 38M_{\\oplus}$. An initial atmospheric reservoir significantly larger than this may have survived through the X-ray and ultraviolet irradiation history, hence being inconsistent with current observations that suggest a telluric composition. In spite of the unlikelihood of a currently existing primordial envelope, volcanism and outgassing may have contributed to a secondary atmosphere. Under this assumption, we present three different synthetic infrared spectra for GJ 357 b that one might expect, consisting of $100\\%~\\rm CO_{2}$, $100\\%~\\rm SO_{2}$, and $75\\%~ \\rm N_{2}$, $24\\%~\\rm CO_{2}$ and $1\\%~\\rm H_{2}O$.",
+      "source": {
+        "name": "arXiv: arXiv:2007.10262v3",
+        "url": "https://arxiv.org/abs/2007.10262v3",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:1904.12818v3",
+      "title": "Planetary system around the nearby M dwarf GJ 357 including a transiting, hot, Earth-sized planet optimal for atmospheric characterization",
+      "year": 2019,
+      "abstract": "We report the detection of a transiting Earth-size planet around GJ 357, a nearby M2.5V star, using data from the Transiting Exoplanet Survey Satellite (TESS). GJ 357 b (TOI-562.01) is a transiting, hot, Earth-sized planet (Teq=525+-11 K) with a radius of Rb=1.217+-0.084 Re and an orbital period of Pb=3.93 d. Precise stellar radial velocities from CARMENES and PFS, as well as archival data from HIRES, UVES, and HARPS also display a 3.93-day periodicity, confirming the planetary nature and leading to a planetary mass of Mb=1.84+-0.31 Me. In addition to the radial velocity signal for GJ 357 b, more periodicities are present in the data indicating the presence of two further planets in the system: GJ 357 c, with a minimum mass of Mc=3.40+-0.46 Me in a 9.12 d orbit, and GJ 357 d, with a minimum mass of Md=6.1+-1.0 Me in a 55.7 d orbit inside the habitable zone. The host is relatively inactive and exhibits a photometric rotation period of Prot=78+-2 d. GJ 357 b is to date the second closest transiting planet to the Sun, making it a prime target for further investigations such as transmission spectroscopy. Therefore, GJ 357 b represents one of the best terrestrial planets suitable for atmospheric characterization with the upcoming JWST and ground-based ELTs.",
+      "source": {
+        "name": "arXiv: arXiv:1904.12818v3",
+        "url": "https://arxiv.org/abs/1904.12818v3",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:2507.07165v1",
+      "title": "JWST COMPASS: A NIRSpec G395H Transmission Spectrum of the Super-Earth GJ 357 b",
+      "year": 2025,
+      "abstract": "We present JWST NIRSpec/G395H transmission spectroscopy observations of GJ 357 b, a warm ($T_{\\mathrm{eq}} \\approx 525$ K) super-Earth ($1.2\\ \\mathrm{R_{\\oplus}} $, $1.84\\ \\mathrm{M_{\\oplus}} $) orbiting a nearby M3-type star, with a median precision of 18 ppm and 27 ppm in NRS1 and NRS2, respectively. These precisions are obtained by binning the spectrum into 53 spectroscopic channels with a resolution of 60 pixels (around 0.02 $μ$m) each. Our analysis of the transmission spectrum reveals no detectable atmospheric spectral features. By comparing the observed spectrum with 1D forward models, we rule out atmospheres with mean molecular weights (MMW) lower than 8 g/mol to $3 σ$, as well as atmospheres with metallicities less than 300x solar. The lack of a low MMW primary atmosphere is consistent with a primordial H$_2$ rich atmosphere having escaped, given the planet's $\\gtrsim5$ Gyr age, relatively low surface gravity (log g = 3.09), and its likely history of substantial incident extreme ultraviolet radiation. We conclude that GJ 357 b most likely possesses either a high-MMW secondary atmosphere, perhaps rich in oxidized gases like CO$_2$, or is a bare rock with no atmosphere. Upcoming scheduled JWST thermal emission observations could help distinguish between these scenarios by detecting signatures indicative of atmospheric heat redistribution or molecular absorption.",
+      "source": {
+        "name": "arXiv: arXiv:2507.07165v1",
+        "url": "https://arxiv.org/abs/2507.07165v1",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:2505.24462v1",
+      "title": "JWST NIRISS Transmission Spectroscopy of the Super-Earth GJ 357b, a Favourable Target for Atmospheric Retention",
+      "year": 2025,
+      "abstract": "We present a JWST NIRISS/SOSS transmission spectrum of the super-Earth GJ 357 b: the first atmospheric observation of this exoplanet. Despite missing the first $\\sim$40 % of the transit due to using an out-of-date ephemeris, we still recover a transmission spectrum that does not display any clear signs of atmospheric features. We perform a search for Gaussian-shaped absorption features within the data but find that this analysis yields comparable fits to the observations as a flat line. We compare the transmission spectrum to a grid of atmosphere models and reject, to 3-$σ$ confidence, atmospheres with metallicities $\\lesssim$100$\\times$ solar ($\\sim$4 g/mol) with clouds at pressures down to 0.01 bar. We analyse how the retention of a secondary atmosphere on GJ 357 b may be possible due to its higher escape velocity compared to an Earth-sized planet and the exceptional inactivity of its host star relative to other M2.5V stars. The star's XUV luminosity decays below the threshold for rapid atmospheric escape early enough that the volcanic revival of an atmosphere of several bars of CO$_2$ is plausible, though subject to considerable uncertainty. Finally, we model the feasibility of detecting an atmosphere on GJ 357 b with MIRI/LRS, MIRI photometry, and NIRSpec/G395H. We find that, with two eclipses, it would be possible to detect features indicative of an atmosphere or surface. Further to this, with 3-4 transits, it would be possible to detect a 1 bar nitrogen-rich atmosphere with 1000 ppm of CO$_2$.",
+      "source": {
+        "name": "arXiv: arXiv:2505.24462v1",
+        "url": "https://arxiv.org/abs/2505.24462v1",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:2609.30552v1",
+      "title": "Hot Rocks Survey VI: An anomalously hot dayside for the rocky planet GJ 357 b",
+      "year": 2026,
+      "abstract": "As part of the JWST Hot Rocks Survey, we analyzed a JWST/MIRI F1500W secondary-eclipse observation of GJ 357 b, a rocky exoplanet orbiting a nearby M dwarf. We also performed a new global analysis of the GJ 357 system, combining TESS photometry, a JWST/NIRSpec transit observation, the MIRI secondary eclipse, radial velocities, and Gaia parallax measurements to obtain a self-consistent set of stellar and planetary parameters. We measure an occultation depth of $200.5 \\pm 12.7,\\mathrm{ppm}$, corresponding to a dayside brightness temperature at $15,μ\\mathrm{m}$ of $T_{\\mathrm{b},15,μ\\mathrm{m}}=923^{+39}_{-38},\\mathrm{K}$. The inferred brightness temperature substantially exceeds the zero-Bond-albedo, no-redistribution, disk-integrated bolometric dayside reference temperature of $686 \\pm 14,\\mathrm{K}$. The measured eclipse depth differs from the tested zero-albedo, grey airless-surface model by $5.2σ$ and is also inconsistent with the high-mean-molecular-weight atmospheric models considered here, including pure CO$_2$, pure H$_2$O, and N$_2$ with 100 ppm CO$_2$. Possible explanations for the excess emission in the MIRI/F1500W band include wavelength-dependent surface emissivity, localized hot regions, or atmospheric temperature structures and opacity sources not included in the tested models. Follow-up mid-infrared eclipse spectroscopy would constrain the shape of the dayside emission spectrum and help test the proposed surface and atmospheric explanations.",
+      "source": {
+        "name": "arXiv: arXiv:2609.30552v1",
+        "url": "https://arxiv.org/abs/2609.30552v1",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    }
+  ],
+  "transit_metrics": {
+    "odd_depth_ppm": 1023.6,
+    "odd_depth_err_ppm": 65.0,
+    "odd_transits": 10,
+    "even_depth_ppm": 1112.3,
+    "even_depth_err_ppm": 70.7,
+    "even_transits": 13,
+    "secondary_depth_ppm": -45.1,
+    "secondary_depth_err_ppm": 37.3,
+    "source": {
+      "name": "Light-curve archive (TESS data at MAST)",
+      "url": "https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3ATESS%2Fproduct%2Ftess2019032160000-s0008-0000000413248763-0136-s_lc.fits",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  }
+}

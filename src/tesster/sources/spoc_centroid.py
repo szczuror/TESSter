@@ -10,7 +10,7 @@ from datetime import date
 from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 
-from tesster.models import CatalogEntry, CentroidMeasurement, Source, TransitMetrics
+from tesster.models import CatalogEntry, CentroidMeasurement, Source
 from tesster.sources.base import LIGHT_CURVE_ARCHIVE_NAME, SourceUnavailableError
 from tesster.sources.exoplanet_archive import (
     TIME_LIMIT_SECONDS,
@@ -20,7 +20,6 @@ from tesster.sources.exoplanet_archive import (
     _TimeLimitError,
     _within,
 )
-from tesster.sources.not_connected import NotConnected
 
 if TYPE_CHECKING:
     from astropy.table import Table
@@ -105,28 +104,22 @@ def dvr_download_link(data_uri: str) -> str:
 
 
 class SpocCentroidArchive:
-    """Implements ``LightCurveArchive.centroid`` from SPOC DV reports at MAST.
+    """The centroid half of ``LightCurveArchive``, from SPOC DV reports at MAST.
 
-    ``transit_metrics`` is delegated to ``transits`` (``NotConnected`` until Package B connects
-    the light-curve measurements).
+    ``MastLightCurves`` measures the transits and passes centroid requests here.
     """
 
     def __init__(
         self,
         list_uris: Callable[[int], list[str]] = ask_spoc_dvr_uris,
         fetch_xml: Callable[[str], str] = fetch_dvr_xml,
-        transits: Any = None,
         today: Callable[[], date] = date.today,
         time_limit: float = TIME_LIMIT_SECONDS,
     ) -> None:
         self._list_uris = list_uris
         self._fetch_xml = fetch_xml
-        self._transits = transits if transits is not None else NotConnected()
         self._today = today
         self._time_limit = time_limit
-
-    def transit_metrics(self, candidate: CatalogEntry) -> TransitMetrics | None:
-        return self._transits.transit_metrics(candidate)
 
     def centroid(self, candidate: CatalogEntry) -> CentroidMeasurement | None:
         try:

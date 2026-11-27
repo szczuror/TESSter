@@ -12,7 +12,7 @@ from astroquery.mast import Observations
 from helpers import make_entry
 
 from tesster.models import parse_toi
-from tesster.sources import SourceNotConnectedError, SourceUnavailableError
+from tesster.sources import SourceUnavailableError
 from tesster.sources.base import LIGHT_CURVE_ARCHIVE_NAME
 from tesster.sources.spoc_centroid import (
     MAST_DOWNLOAD_URL,
@@ -155,12 +155,6 @@ def test_unusable_spoc_uncertainty_falls_back_to_next_dvr_or_none():
     measurement = archive.centroid(make_entry(toi=parse_toi("TOI-1285.01"), period_days=1.2293))
     assert measurement is not None
     assert measurement.offset_arcsec == 0.8
-
-
-def test_transit_metrics_remain_not_connected_until_package_b():
-    archive = SpocCentroidArchive(list_uris=lambda tic_id: [])
-    with pytest.raises(SourceNotConnectedError):
-        archive.transit_metrics(make_entry())
 
 
 def test_archive_that_does_not_answer_is_given_up_on():

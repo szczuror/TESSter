@@ -14,7 +14,7 @@ Given a candidate's TOI number, the agent looks the candidate up in the catalogs
 
 An LLM runs the check through tool calls, but code computes the verdict from the test results (FR-11), so the same results always give the same verdict.
 
-> **Real archives are being connected.** The candidate comes from the TOI table of the [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/). Papers, the star catalog and light curves are not connected yet: the report lists them under *Problems and missing data*, and until they are, most verdicts are *inconclusive*. The made-up candidates `TOI-90001.01` to `TOI-90005.01` are used only by the tests.
+> **Real archives are connected.** The candidate comes from the TOI table of the [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/) (with planet aliases from `pscomppars`), papers come from [arXiv](https://arxiv.org/), and light-curve transit measurements (odd-even depth and secondary eclipse) come from [TESS data at MAST](https://archive.stsci.edu/missions-and-data/tess). Saved archive answers for the eight reference candidates in `tesster samples` are bundled and used automatically. Nearby stars come from the [TESS Input Catalog](https://mast.stsci.edu/) and the centroid measurement from the SPOC Data Validation reports at MAST. The made-up candidates `TOI-90001.01` to `TOI-90005.01` are used only by the tests.
 
 ## Setup
 
@@ -50,7 +50,7 @@ uv run tesster check TOI-270.01 --blind              # hide catalog status, name
 uv run tesster check TOI-270.01 --out reports        # also save the report as Markdown
 ```
 
-Every check reads the online archives, so it needs a network connection. `--offline` only turns the LLM off.
+Every check reads the online archives, so it needs a network connection. The eight reference candidates are the exception: their saved archive answers are used instead. `--offline` only turns the LLM off.
 
 ## Development
 
