@@ -317,4 +317,22 @@ def test_followup_answers_from_the_report_without_paper_abstracts(sources, setti
     assert '"verdict": "false positive"' in seen["instructions"]
     assert "Seeing-limited photometry shows" in seen["instructions"]  # the title is there
     assert "Ground-based time-series photometry" not in seen["instructions"]  # the abstract not
+    assert "900300031" in seen["instructions"]  # bright neighbor kept
+    assert "900300032" not in seen["instructions"]  # faint neighbor counted, not listed
+    assert '"fainter_neighbors_count": 1' in seen["instructions"]
     assert len(longer_history) > len(history)
+
+
+def test_find_nearby_stars_returns_only_bright_neighbors_and_fainter_count(sources, settings):
+    script = Script(
+        [("find_nearby_stars", {})],
+        [call("centroid", "A star 38 arcsec away could cause the dip.")],
+        [call("odd_even_depth"), call("secondary_eclipse"), call("companion_size")],
+        [("get_verdict", {})],
+        "The light centre moves toward a nearby star.",
+    )
+    run_agent(script, "TOI-90003.01", sources, settings)
+    sent = script.sent_text()
+    assert "900300031" in sent
+    assert "900300032" not in sent
+    assert "fainter_stars_count=1" in sent

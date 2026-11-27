@@ -88,14 +88,27 @@ def render_report(report: Report) -> str:
     elif not report.neighbors:
         out.append("No stars found.")
     else:
-        out += [
-            "| TIC | Separation | TESS mag | Largest dip it could cause | Could cause the dip? |",
-            "|---|---|---|---|---|",
-        ]
-        for n in report.neighbors:
+        bright = [n for n in report.neighbors if n.could_cause_dip]
+        faint_count = len(report.neighbors) - len(bright)
+        if bright:
+            out += [
+                "| TIC | Separation | TESS mag | Largest dip it could cause "
+                "| Could cause the dip? |",
+                "|---|---|---|---|---|",
+            ]
+            for n in bright:
+                out.append(
+                    f"| {n.star.tic_id} | {n.star.separation_arcsec:.0f} arcsec "
+                    f"| {n.star.tmag:.1f} | {n.max_depth_ppm:,.0f} ppm | yes |"
+                )
+            if faint_count:
+                word = "star is" if faint_count == 1 else "stars are"
+                out += ["", f"{faint_count} other {word} too faint to cause the dip."]
+        else:
+            word = "star" if faint_count == 1 else "stars"
             out.append(
-                f"| {n.star.tic_id} | {n.star.separation_arcsec:.0f} arcsec | {n.star.tmag:.1f} "
-                f"| {n.max_depth_ppm:,.0f} ppm | {'yes' if n.could_cause_dip else 'no'} |"
+                f"No star within {NEARBY_RADIUS_ARCMIN} arcmin is bright enough to cause the dip "
+                f"({faint_count} fainter {word} checked)."
             )
         out += ["", f"Source: {link(report.neighbors[0].star.source)}"]
     out.append("")

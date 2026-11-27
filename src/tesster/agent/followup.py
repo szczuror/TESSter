@@ -38,6 +38,10 @@ def report_for_followup(report: Report) -> str:
         mode="json",
         exclude={"trace": True, "papers": {"__all__": {"paper": {"abstract"}}}},
     )
+    if data["neighbors"] is not None:
+        bright = [n for n in data["neighbors"] if n["could_cause_dip"]]
+        data["fainter_neighbors_count"] = len(data["neighbors"]) - len(bright)
+        data["neighbors"] = bright
     return json.dumps(data, indent=1, ensure_ascii=False)
 
 

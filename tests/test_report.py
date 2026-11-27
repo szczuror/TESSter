@@ -77,3 +77,19 @@ def test_summary_lists_inputs_that_were_not_checked(sources, settings):
     assert lines[2].startswith("| TOI-90002.01 | false positive")
     assert lines[3].startswith("| TOI-xyz | not checked")
     assert isinstance(outcomes[-1], NotChecked)
+
+
+def test_nearby_stars_table_lists_only_bright_neighbors_and_counts_fainter_ones(sources, settings):
+    """A crowded field can hold thousands of stars within 2.5 arcmin. The report lists only
+    those bright enough to cause the dip, plus a count of the rest."""
+    with_bright_and_faint = render_report(offline("TOI-90003.01", sources, settings))
+    assert "| 900300031 | 38 arcsec | 13.1 |" in with_bright_and_faint
+    assert "900300032" not in with_bright_and_faint
+    assert "1 other star is too faint to cause the dip." in with_bright_and_faint
+
+    only_faint = render_report(offline("TOI-90001.01", sources, settings))
+    assert "900100011" not in only_faint
+    assert (
+        "No star within 2.5 arcmin is bright enough to cause the dip (2 fainter stars checked)."
+        in only_faint
+    )
