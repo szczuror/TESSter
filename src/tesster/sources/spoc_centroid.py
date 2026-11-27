@@ -28,6 +28,12 @@ if TYPE_CHECKING:
 MAST_DOWNLOAD_URL = "https://mast.stsci.edu/api/v0.1/Download/file"
 _DVR_NAME_RE = re.compile(r"-s(\d{4})-s(\d{4})-\d+-(\d+)_dvr\.xml$")
 _PERIOD_TOLERANCE = 0.05
+MAX_DVR_FILES = 5
+"""At most this many DV reports are read per candidate, best ranked first.
+
+A star seen in many sectors can have dozens of reports. The multi-sector ones come first and
+cover the same signals, so reading all of them would only make the check slow.
+"""
 
 
 def ask_spoc_dvr_uris(tic_id: int) -> list[str]:
@@ -130,13 +136,21 @@ class SpocCentroidArchive:
                 LIGHT_CURVE_ARCHIVE_NAME, "it did not answer in time"
             ) from None
 
-        for uri in uris:
+        # One report that cannot be downloaded does not stop the search: the next one may hold
+        # the result. Only when no report gave a result and some could not be read is the
+        # archive reported as unavailable, because a missing report may have held it.
+        problem: SourceUnavailableError | None = None
+        for uri in uris[:MAX_DVR_FILES]:
             try:
                 xml_text = _within(self._time_limit, lambda u=uri: self._fetch_xml(u))
             except _TimeLimitError:
-                raise SourceUnavailableError(
+                problem = SourceUnavailableError(
                     LIGHT_CURVE_ARCHIVE_NAME, "it did not answer in time"
-                ) from None
+                )
+                continue
+            except SourceUnavailableError as exc:
+                problem = exc
+                continue
             parsed = parse_dvr_centroid(xml_text, candidate)
             if parsed is not None:
                 offset, err = parsed
@@ -149,6 +163,8 @@ class SpocCentroidArchive:
                         retrieved=self._today(),
                     ),
                 )
+        if problem is not None:
+            raise problem
         return None
 
 

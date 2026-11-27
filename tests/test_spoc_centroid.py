@@ -16,6 +16,7 @@ from tesster.sources import SourceNotConnectedError, SourceUnavailableError
 from tesster.sources.base import LIGHT_CURVE_ARCHIVE_NAME
 from tesster.sources.spoc_centroid import (
     MAST_DOWNLOAD_URL,
+    MAX_DVR_FILES,
     SpocCentroidArchive,
     dvr_download_link,
     rank_dvr_uris,
@@ -211,3 +212,49 @@ def test_lone_dv_result_without_a_period_is_used():
 
     assert measurement is not None
     assert measurement.offset_arcsec == 0.9
+
+
+def test_report_that_cannot_be_downloaded_is_skipped():
+    def fetch(uri: str) -> str:
+        if "broken" in uri:
+            raise SourceUnavailableError(LIGHT_CURVE_ARCHIVE_NAME, "503 Service Unavailable")
+        return dvr_xml(offset=0.8, uncertainty=2.5)
+
+    archive = SpocCentroidArchive(
+        list_uris=lambda tic_id: ["mast:TESS/product/broken_dvr.xml", SAMPLE_URI],
+        fetch_xml=fetch,
+    )
+    measurement = archive.centroid(make_entry(toi=parse_toi("TOI-1285.01"), period_days=1.2293))
+
+    assert measurement is not None
+    assert measurement.offset_arcsec == 0.8
+
+
+def test_archive_is_unavailable_when_no_report_matched_and_one_could_not_be_downloaded():
+    """The report that failed may have held the result, so 'no SPOC result' would be wrong."""
+
+    def fetch(uri: str) -> str:
+        if "broken" in uri:
+            raise SourceUnavailableError(LIGHT_CURVE_ARCHIVE_NAME, "503 Service Unavailable")
+        return dvr_xml(toi_id=None, period_days=11.3)
+
+    archive = SpocCentroidArchive(
+        list_uris=lambda tic_id: [SAMPLE_URI, "mast:TESS/product/broken_dvr.xml"],
+        fetch_xml=fetch,
+    )
+    with pytest.raises(SourceUnavailableError, match="503"):
+        archive.centroid(make_entry(toi=parse_toi("TOI-1285.01"), period_days=2.1))
+
+
+def test_only_the_best_ranked_reports_are_read():
+    fetched: list[str] = []
+
+    def fetch(uri: str) -> str:
+        fetched.append(uri)
+        return dvr_xml(toi_id=None, period_days=11.3)
+
+    uris = [f"mast:TESS/product/s{n}_dvr.xml" for n in range(MAX_DVR_FILES + 10)]
+    archive = SpocCentroidArchive(list_uris=lambda tic_id: uris, fetch_xml=fetch)
+
+    assert archive.centroid(make_entry(period_days=2.1)) is None
+    assert fetched == uris[:MAX_DVR_FILES]
