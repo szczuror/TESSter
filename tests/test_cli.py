@@ -27,8 +27,13 @@ def placeholder_data(monkeypatch):
 
 def archive_answers(monkeypatch, *rows: dict) -> None:
     """Use the real sources, with the archive behind astroquery answering with these rows."""
-    monkeypatch.setattr("tesster.cli.build_sources", build_sources)
+    monkeypatch.setattr("tesster.cli.build_sources", lambda: build_sources(saved_dir=None))
     monkeypatch.setattr(NasaExoplanetArchive, "query_criteria", lambda **criteria: toi_table(*rows))
+    monkeypatch.setattr(
+        "tesster.sources.papers.ask_arxiv",
+        lambda query: '<feed xmlns="http://www.w3.org/2005/Atom"/>',
+    )
+    monkeypatch.setattr("tesster.sources.light_curves.ask_mast_uris", lambda tic_id: [])
 
 
 def test_check_reads_the_online_archives_without_any_flag(monkeypatch, tmp_path):
@@ -53,6 +58,15 @@ def test_candidate_missing_from_the_online_catalog_is_explained(monkeypatch):
 
     assert result.exit_code == 1
     assert "No candidate TOI-99999.01" in result.output
+
+
+def test_saved_reference_candidate_runs_through_cli_without_network(monkeypatch):
+    monkeypatch.setattr("tesster.cli.build_sources", build_sources)
+
+    result = runner.invoke(app, ["check", "TOI-3503.01", "--offline"])
+
+    assert result.exit_code == 0, result.output
+    assert "TOI-3503.01: false positive" in result.output
 
 
 def test_samples_lists_the_reference_candidates():

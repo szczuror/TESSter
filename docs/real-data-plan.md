@@ -15,15 +15,15 @@ This plan covers the first project goal: `tesster check` on a real TOI gives a r
 | Reference TOI | What it is | Verdict now |
 |---|---|---|
 | TOI-495.01 | known planet WASP-121 b | *false positive* (see the open decision) |
-| TOI-270.01 | confirmed planet TOI-270 c | *inconclusive* |
-| TOI-562.01 | confirmed planet GJ 357 b, shallow transit | *inconclusive* |
-| TOI-236.01 | eclipsing binary, object too big | *false positive* (companion size) |
-| TOI-1637.01 | eclipsing binary, strong secondary eclipse | *inconclusive* |
-| TOI-3503.01 | eclipsing binary, odd-even difference | *inconclusive* |
-| TOI-1285.01 | nearby eclipsing binary, clear centroid shift | *inconclusive* |
-| TOI-5962.01 | nearby eclipsing binary, two stars in one pixel | *inconclusive* |
+| TOI-270.01 | confirmed planet TOI-270 c | *inconclusive* (passes odd-even, secondary-eclipse and companion-size; awaits Package A) |
+| TOI-562.01 | confirmed planet GJ 357 b, shallow transit | *inconclusive* (passes odd-even, secondary-eclipse and companion-size; awaits Package A) |
+| TOI-236.01 | eclipsing binary, object too big | *false positive* (secondary eclipse, companion size) |
+| TOI-1637.01 | eclipsing binary, strong secondary eclipse | *false positive* (secondary eclipse) |
+| TOI-3503.01 | eclipsing binary, odd-even difference | *false positive* (odd-even depth) |
+| TOI-1285.01 | nearby eclipsing binary, clear centroid shift | *inconclusive* (awaits Package A) |
+| TOI-5962.01 | nearby eclipsing binary, two stars in one pixel | *inconclusive* (awaits Package A) |
 
-Only the companion-size test runs on real data so far. The other tests are skipped for lack of measurements, so most verdicts are *inconclusive*.
+The companion-size, odd-even depth and secondary-eclipse tests run on real data, papers are searched on arXiv (using confirmed-planet aliases from the NASA Exoplanet Archive), and saved archive answers for the eight reference candidates are replayed automatically when present. Only nearby stars and centroid measurements (Package A) are still not connected.
 
 ## Open decision
 

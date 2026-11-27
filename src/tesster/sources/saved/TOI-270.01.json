@@ -1,0 +1,82 @@
+{
+  "candidate": {
+    "toi": {
+      "star": 270,
+      "candidate": 1
+    },
+    "tic_id": 259377017,
+    "tmag": 10.4981,
+    "ra_deg": 68.41608,
+    "dec_deg": -51.957394,
+    "period_days": 5.6604773,
+    "epoch_btjd": 3982.004741,
+    "duration_hours": 1.6617716,
+    "depth_ppm": 3451.8440419,
+    "stellar_radius_rsun": 0.374358,
+    "disposition": "CP",
+    "disposition_date": "2026-04-17",
+    "aliases": [
+      "TOI-270 c"
+    ],
+    "source": {
+      "name": "NASA Exoplanet Archive, TOI table",
+      "url": "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+toi%2Ctid%2Ctfopwg_disp%2Cst_tmag%2Cra%2Cdec%2Cpl_orbper%2Cpl_tranmid%2Cpl_trandurh%2Cpl_trandep%2Cst_rad%2Crowupdate+from+toi+where+toi%3D270.01&format=json",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  },
+  "papers": [
+    {
+      "id": "arXiv:1903.06107v2",
+      "title": "A super-Earth and two sub-Neptunes transiting the nearby and quiet M dwarf TOI-270",
+      "year": 2019,
+      "abstract": "We report the Transiting Exoplanet Survey Satellite discovery of three small planets transiting one of the nearest and brightest M dwarf hosts to date, TOI-270 (TIC 259377017; K-mag 8.3; 22.5 parsec). The M3V-type star is transited by the super-Earth-sized TOI-270 b (1.247+0.089-0.083 R_earth) and the sub-Neptune-sized exoplanets TOI-270 c (2.42+-0.13 R_earth) and TOI-270 d (2.13+-0.12 R_earth). The planets orbit close to a mean-motion resonant chain, with periods (3.36, 5.66, and 11.38 days) near ratios of small integers (5:3 and 2:1). TOI-270 is a prime target for future studies since: 1) its near-resonance allows detecting transit timing variations for precise mass measurements and dynamical studies; 2) its brightness enables independent radial velocity mass measurements; 3) the outer planets are ideal for atmospheric characterisation via transmission spectroscopy; and 4) the quiet star enables future searches for habitable zone planets. Altogether, very few systems with small, temperate exoplanets are as suitable for such complementary and detailed characterisation as TOI-270.",
+      "source": {
+        "name": "arXiv: arXiv:1903.06107v2",
+        "url": "https://arxiv.org/abs/1903.06107v2",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:2004.12475v1",
+      "title": "Properties of Sub-Neptune Atmospheres: TOI-270 System",
+      "year": 2020,
+      "abstract": "We investigate the potential for the James Webb Space Telescope (JWST) to detect and characterize the atmospheres of the sub-Neptunian exoplanets in the TOI-270 system. Sub-Neptunes are considered more likely to be water worlds than gas dwarfs. We model their atmospheres using three atmospheric compositions - two examples of hydrogen-dominated atmospheres and a water-dominated atmosphere. We then simulate the infrared transmission spectra of these atmospheres for JWST instrument modes optimized for transit observation of exoplanet atmospheres : NIRISS, NIRSpec and MIRI. We then predict the observability of each exoplanet's atmosphere. TOI-270c and d are excellent targets for detecting atmospheres with JWST transmission spectroscopy, requiring only 1 transit observation with NIRISS, NIRSpec and MIRI; higher signal-to-noise (SNR) can be obtained for a clear H-rich atmosphere. Fewer than 3 transits with NIRISS and NIRSpec may be enough to reveal molecular features. Water-dominated atmospheres require more transits. Water spectral features in water-dominated atmospheres may be detectable with NIRISS in 2 or 3 transits. We find that the detection of spectral features in a cloudy, H-rich atmosphere does not require integrations as long as those required for the water-dominated atmosphere, which is consistent with the differences in atmospheric mean molecular weight. TOI-270c and d could be prime targets for JWST transit observations of sub-Neptune atmospheres. These results provide useful predictions for observers who may propose to use JWST to detect and characterize the TOI-270 planet atmospheres.",
+      "source": {
+        "name": "arXiv: arXiv:2004.12475v1",
+        "url": "https://arxiv.org/abs/2004.12475v1",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:2508.01885v1",
+      "title": "Thermoelastic Contraction as a Suppressor of Atmospheric Escape in Close-in Exoplanets",
+      "year": 2025,
+      "abstract": "The long-term retention of substantial atmospheres in close-in exoplanets presents a major challenge to classical hydrodynamic escape theory, which predicts rapid mass loss under intense stellar irradiation. In this work, we propose a fully classical, interior-driven suppression mechanism based on thermoelastic contraction of the planetary mantle. By incorporating pressure- and temperature-dependent elastic deformation into the structural evolution of the planet, we demonstrate that radial contraction can lead to measurable increases in surface escape velocity. We analytically derive a modified escape condition and introduce a dimensionless suppression index Xi that quantifies the extent to which internal mechanical response inhibits atmospheric loss. Numerical simulations across a wide parameter space show that volumetric strain values in the range 0.005 to 0.01 can enhance escape velocities by up to 10 percent, leading to a reduction in energy-limited escape rates by over 50 percent. When applied to warm mini-Neptunes such as GJ 1214b, K2-18b, and TOI-270c, the model successfully accounts for their persistent atmospheres without invoking exotic stellar conditions or chemical outliers. Our results indicate that planetary elasticity, often neglected in escape models, plays a first-order role in shaping the atmospheric evolution of close-in worlds. The theory yields specific observational predictions, including suppressed outflow signatures and radius anomalies, which may be testable with JWST, ARIEL, and future spectroscopic missions.",
+      "source": {
+        "name": "arXiv: arXiv:2508.01885v1",
+        "url": "https://arxiv.org/abs/2508.01885v1",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    }
+  ],
+  "transit_metrics": {
+    "odd_depth_ppm": 3686.2,
+    "odd_depth_err_ppm": 190.7,
+    "odd_transits": 7,
+    "even_depth_ppm": 3694.5,
+    "even_depth_err_ppm": 267.1,
+    "even_transits": 8,
+    "secondary_depth_ppm": -160.0,
+    "secondary_depth_err_ppm": 95.9,
+    "source": {
+      "name": "Light-curve archive (TESS data at MAST)",
+      "url": "https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3ATESS%2Fproduct%2Ftess2018263035959-s0003-0000000259377017-0123-s_lc.fits",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  }
+}

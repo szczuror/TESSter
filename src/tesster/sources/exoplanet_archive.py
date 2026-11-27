@@ -23,6 +23,10 @@ if TYPE_CHECKING:
 
 CATALOG_NAME = "NASA Exoplanet Archive, TOI table"
 TABLE = "toi"
+PLANET_TABLE = "pscomppars"
+PLANET_COLUMNS = ("pl_name", "pl_orbper")
+PLANET_PERIOD_TOLERANCE = 0.05
+"""Largest relative period difference when matching a TOI to a confirmed planet of the same star."""
 TAP_URL = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync"
 
 TIME_LIMIT_SECONDS = 60.0
@@ -67,6 +71,15 @@ _MUST_BE_POSITIVE = ("pl_orbper", "pl_trandurh", "pl_trandep")
 
 def ask_archive(where: str) -> Table:
     """Send one query to the TOI table through astroquery, or raise SourceUnavailableError."""
+    return _query_table(TABLE, COLUMNS, where)
+
+
+def ask_planets(tic_id: int) -> Table:
+    """Read confirmed planets of ``tic_id`` from the composite planet table."""
+    return _query_table(PLANET_TABLE, PLANET_COLUMNS, f"tic_id='TIC {int(tic_id)}'")
+
+
+def _query_table(table: str, columns: tuple[str, ...], where: str) -> Table:
     # Imported here because astroquery takes about two seconds to load, which commands that
     # never query the archive should not wait for.
     import pyvo
@@ -79,7 +92,7 @@ def ask_archive(where: str) -> Table:
             # No rows means the candidate is not in the catalog, which get_candidate reports.
             warnings.simplefilter("ignore", astroquery_errors.NoResultsWarning)
             return NasaExoplanetArchive.query_criteria(
-                table=TABLE, select=",".join(COLUMNS), where=where
+                table=table, select=",".join(columns), where=where
             )
     except (
         # astroquery turns every failure of the query into InvalidQueryError, network errors
@@ -94,17 +107,19 @@ def ask_archive(where: str) -> Table:
 
 
 class ToiCatalog:
-    """Implements ExoplanetCatalog with one query per candidate."""
+    """Implements ExoplanetCatalog with one query per candidate (plus optional planet aliases)."""
 
     def __init__(
         self,
         ask: Callable[[str], Table] = ask_archive,
         today: Callable[[], date] = date.today,
         time_limit: float = TIME_LIMIT_SECONDS,
+        ask_planets: Callable[[int], Table] | None = None,
     ) -> None:
         self._ask = ask
         self._today = today
         self._time_limit = time_limit
+        self._ask_planets = ask_planets
 
     def get_candidate(self, toi: ToiId) -> CatalogEntry:
         # ToiId holds two integers, so nothing the user typed reaches the query text.
@@ -115,7 +130,18 @@ class ToiCatalog:
             raise SourceUnavailableError(CATALOG_NAME, "it did not answer in time") from None
         if len(table) == 0:
             raise CandidateNotFoundError(toi)
-        return self._entry(toi, table[0], where)
+        entry = self._entry(toi, table[0], where)
+        aliases = self._aliases(entry)
+        return entry.model_copy(update={"aliases": aliases}) if aliases else entry
+
+    def _aliases(self, entry: CatalogEntry) -> list[str]:
+        if self._ask_planets is None:
+            return []
+        try:
+            planets = _within(self._time_limit, lambda: self._ask_planets(entry.tic_id))
+        except (_TimeLimitError, SourceUnavailableError):
+            return []
+        return planet_aliases(planets, entry.period_days, entry.toi)
 
     def _entry(self, toi: ToiId, row: Any, where: str) -> CatalogEntry:
         numbers = {column: _number(row[column]) for column in (*_NEEDED, "st_rad")}
@@ -147,6 +173,30 @@ def catalog_link(where: str) -> str:
     """An address that shows the same row in a browser. The report links to it (FR-14)."""
     query = f"select {','.join(COLUMNS)} from {TABLE} where {where}"
     return f"{TAP_URL}?{urlencode({'query': query, 'format': 'json'})}"
+
+
+def planet_aliases(table: Table, period_days: float, toi: ToiId | None = None) -> list[str]:
+    """Names from the confirmed-planet table that match this candidate's orbital period."""
+    colnames = set(getattr(table, "colnames", ()))
+    if "pl_name" not in colnames or len(table) == 0:
+        return []
+    toi_label = str(toi).lower() if toi is not None else ""
+    names: list[str] = []
+    for row in table:
+        name = _text(row["pl_name"]).strip()
+        if not name or name.lower() == toi_label:
+            continue
+        planet_period = _number(row["pl_orbper"]) if "pl_orbper" in colnames else None
+        if planet_period is None:
+            if len(table) == 1 and name not in names:
+                names.append(name)
+            continue
+        if (
+            abs(planet_period - period_days) / period_days <= PLANET_PERIOD_TOLERANCE
+            and name not in names
+        ):
+            names.append(name)
+    return names
 
 
 def _number(cell: Any) -> float | None:

@@ -1,0 +1,106 @@
+{
+  "candidate": {
+    "toi": {
+      "star": 495,
+      "candidate": 1
+    },
+    "tic_id": 22529346,
+    "tmag": 10.056,
+    "ra_deg": 107.600231,
+    "dec_deg": -39.09727,
+    "period_days": 1.2749246,
+    "epoch_btjd": 2986.21062,
+    "duration_hours": 2.783,
+    "depth_ppm": 18699.0,
+    "stellar_radius_rsun": 1.52,
+    "disposition": "KP",
+    "disposition_date": "2023-04-04",
+    "aliases": [
+      "WASP-121 b"
+    ],
+    "source": {
+      "name": "NASA Exoplanet Archive, TOI table",
+      "url": "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+toi%2Ctid%2Ctfopwg_disp%2Cst_tmag%2Cra%2Cdec%2Cpl_orbper%2Cpl_tranmid%2Cpl_trandurh%2Cpl_trandep%2Cst_rad%2Crowupdate+from+toi+where+toi%3D495.01&format=json",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  },
+  "papers": [
+    {
+      "id": "arXiv:1909.03000v2",
+      "title": "TESS observations of the WASP-121 b phase curve",
+      "year": 2019,
+      "abstract": "We study the red-optical photometry of the ultra-hot Jupiter WASP-121 b as observed by the Transiting Exoplanet Survey Satellite (TESS) and model its atmosphere through a radiative transfer simulation. Given its short orbital period of $\\sim1.275$ days, inflated state and bright host star, WASP-121 b is exceptionally favorable for detailed atmospheric characterization. Towards this purpose, we use \\texttt{allesfitter} to characterize its full red-optical phase curve, including the planetary phase modulation and the secondary eclipse. We measure the day and nightside brightness temperatures in the TESS passband as $3012\\substack{+40 \\\\ -42}$ K and $2022\\substack{+254 \\\\ -602}$ K, respectively, and do not find a statistically significant phase shift between the brightest and substellar points. This is consistent with an inefficient heat recirculation on the planet. We then perform an atmospheric retrieval analysis to infer the dayside atmospheric properties of WASP-121 b such as its bulk composition, albedo and heat recirculation. We confirm the temperature inversion in the atmosphere and suggest H$^-$, TiO and VO as potential causes of the inversion, absorbing heat at optical wavelengths at low pressures. Future HST and JWST observations of WASP-121 b will benefit from its first full phase curve measured by TESS.",
+      "source": {
+        "name": "arXiv: arXiv:1909.03000v2",
+        "url": "https://arxiv.org/abs/1909.03000v2",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:2502.12262v1",
+      "title": "Titanium chemistry of WASP-121 b with ESPRESSO in 4-UT mode",
+      "year": 2025,
+      "abstract": "Transit spectroscopy usually relies on the integration of one or several transits to achieve the S/N necessary to resolve spectral features. Consequently, high-S/N observations of exoplanet atmospheres are essential for disentangling the complex chemistry and dynamics beyond global trends. In this study, we combined two partial 4-UT transits of the ultrahot Jupiter WASP-121 b, observed with the ESPRESSO at the VLT in order to revisit its titanium chemistry. Through cross-correlation analysis, we achieved detections of H I, Li I, Na I, K I, Mg I, Ca I, Ti I, V I, Cr I, Mn I, Fe I, Fe II, Co I, Ni I, Ba II, Sr I, and Sr II. Additionally, narrow-band spectroscopy allowed us to resolve strong single lines, resulting in significant detections of H$α$, H$β$, H$γ$, Li I, Na I, K I, Mg I, Ca II, Sr I, Sr II, and Mn I. Our most notable finding is the high-significance detection of Ti I ($\\sim$ 5$σ$ per spectrum, and $\\sim$ 19$σ$ stacked in the planetary rest frame). Comparison with atmospheric models reveals that Ti I is indeed depleted compared to V I. We also resolve the planetary velocity traces of both Ti I and V I, with Ti I exhibiting a significant blueshift toward the end of the transit. This suggests that Ti I primarily originates from low-latitude regions within the super-rotating jet observed in WASP-121 b. Our observations suggest limited mixing between the equatorial jet and the mid-latitudes, in contrast with model predictions from GCMs. We also report the non-detection of TiO, which we attribute to inaccuracies in the line list that could hinder its detection, even if present. Thus, the final determination of the presence of TiO must await space-based observations. We conclude that the 4-UT mode of ESPRESSO is an excellent testbed for achieving high S/N on relatively faint targets, paving the way for future observations with the ELT.",
+      "source": {
+        "name": "arXiv: arXiv:2502.12262v1",
+        "url": "https://arxiv.org/abs/2502.12262v1",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:1506.02471v1",
+      "title": "WASP-121 b: a hot Jupiter in a polar orbit and close to tidal disruption",
+      "year": 2015,
+      "abstract": "We present the discovery by the WASP-South survey, in close collaboration with the Euler and TRAPPIST telescopes, of WASP-121 b, a new remarkable short-period transiting hot Jupiter, whose planetary nature has been statistically validated by the PASTIS software. The planet has a mass of $1.183_{-0.062}^{+0.064}$ $M_{\\mathrm{Jup}}$, a radius of 1.865 $\\pm$ 0.044 $R_{\\mathrm{Jup}}$, and transits every $1.2749255_{-0.0000025}^{+0.0000020}$ days an active F6-type main-sequence star ($V$=10.4, $1.353_{-0.079}^{+0.080}$ $M_{\\odot}$, 1.458 $\\pm$ 0.030 $R_{\\odot}$, $T_{\\mathrm{eff}}$ = 6460 $\\pm$ 140 K). A notable property of WASP-121 b is that its orbital semi-major axis is only $\\sim$1.15 times larger than its Roche limit, which suggests that the planet might be close to tidal disruption. Furthermore, its large size and extreme irradiation ($\\sim$$7.1\\:10^{9}$ erg $\\mathrm{s}^{-1} \\mathrm{cm}^{-2}$) make it an excellent target for atmospheric studies via secondary eclipse observations. Using the TRAPPIST telescope, we indeed detect its emission in the $z'$-band at better than $\\sim$4$σ$, the measured occultation depth being 603 $\\pm$ 130 ppm. Finally, from a measurement of the Rossiter-McLaughlin effect with the CORALIE spectrograph, we infer a sky-projected spin-orbit angle of $257.8_{-5.5}^{+5.3}$ deg. This result indicates a significant misalignment between the spin axis of the host star and the orbital plane of the planet, the planet being in a nearly polar orbit. Such a high misalignment suggests a migration of the planet involving strong dynamical events with a third body.",
+      "source": {
+        "name": "arXiv: arXiv:1506.02471v1",
+        "url": "https://arxiv.org/abs/1506.02471v1",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:2508.06626v1",
+      "title": "Quantifying thermal water dissociation in the dayside photosphere of WASP-121 b using NIRPS",
+      "year": 2025,
+      "abstract": "The intense stellar irradiation of ultra-hot Jupiters results in some of the most extreme atmospheric environments in the planetary regime. On their daysides, temperatures can be sufficiently high for key atmospheric constituents to thermally dissociate into simpler molecular species and atoms. This dissociation drastically changes the atmospheric opacities and, in turn, critically alters the temperature structure, atmospheric dynamics, and day-night heat transport. To this date, however, simultaneous detections of the dissociating species and their thermally dissociation products in exoplanet atmospheres have remained rare. Here we present the simultaneous detections of H$_2$O and its thermally dissociation product OH on the dayside of the ultra-hot Jupiter WASP-121 b based on high-resolution emission spectroscopy with the recently commissioned Near InfraRed Planet Searcher (NIRPS). We retrieve a photospheric abundance ratio of log$_{10}$(OH/H$_2$O) $= -0.15\\pm{0.20}$ indicating that there is about as much OH as H$_2$O at photospheric pressures, which confirms predictions from chemical equilibrium models. We compare the dissociation on WASP-121 b with other ultra-hot Jupiters and show that a trend in agreement with equilibrium models arises. We also discuss an apparent velocity shift of $4.79^{+0.93}_{-0.97} $km s$^{-1}$ in the H$_2$O signal, which is not reproduced by current global circulation models. Finally, in addition to H$_2$O and OH, the NIRPS data reveal evidence of Fe and Mg, from which we infer a Fe/Mg ratio consistent with the solar and host star ratios. Our results demonstrate that NIRPS can be an excellent instrument to obtain simultaneous measurements of refractory and volatile molecular species, paving the way for many future studies on the atmospheric composition, chemistry, and the formation history of close-in exoplanets.",
+      "source": {
+        "name": "arXiv: arXiv:2508.06626v1",
+        "url": "https://arxiv.org/abs/2508.06626v1",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "id": "arXiv:2410.19017v1",
+      "title": "The Roasting Marshmallows Program with IGRINS on Gemini South II -- WASP-121 b has super-stellar C/O and refractory-to-volatile ratios",
+      "year": 2024,
+      "abstract": "A primary goal of exoplanet science is to measure the atmospheric composition of gas giants in order to infer their formation and migration histories. Common diagnostics for planet formation are the atmospheric metallicity ([M/H]) and the carbon-to-oxygen (C/O) ratio as measured through transit or emission spectroscopy. The C/O ratio in particular can be used to approximately place a planet's initial formation radius from the stellar host, but a given C/O ratio may not be unique to formation location. This degeneracy can be broken by combining measurements of both the C/O ratio and the atmospheric refractory-to-volatile ratio. We report the measurement of both quantities for the atmosphere of the canonical ultra hot Jupiter WASP-121 b using the high resolution (R=45,000) IGRINS instrument on Gemini South. Probing the planet's direct thermal emission in both pre- and post-secondary eclipse orbital phases, we infer that WASP-121 b has a significantly super-stellar C/O ratio of 0.70$^{+0.07}_{-0.10}$ and a moderately super-stellar refractory-to-volatile ratio at 3.83$^{+3.62}_{-1.67} \\times$ stellar. This combination is most consistent with formation between the soot line and H$_2$O snow line, but we cannot rule out formation between the H$_2$O and CO snow lines or beyond the CO snow line. We also measure velocity offsets between H$_2$O, CO, and OH, potentially an effect of chemical inhomogeneity on the planet day side. This study highlights the ability to measure both C/O and refractory-to-volatile ratios via high resolution spectroscopy in the near-infrared H and K bands.",
+      "source": {
+        "name": "arXiv: arXiv:2410.19017v1",
+        "url": "https://arxiv.org/abs/2410.19017v1",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    }
+  ],
+  "transit_metrics": {
+    "odd_depth_ppm": 16205.0,
+    "odd_depth_err_ppm": 118.4,
+    "odd_transits": 37,
+    "even_depth_ppm": 16146.9,
+    "even_depth_err_ppm": 121.8,
+    "even_transits": 36,
+    "secondary_depth_ppm": 349.2,
+    "secondary_depth_err_ppm": 27.3,
+    "source": {
+      "name": "Light-curve archive (TESS data at MAST)",
+      "url": "https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3ATESS%2Fproduct%2Ftess2019006130736-s0007-0000000022529346-0131-s_lc.fits",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  }
+}

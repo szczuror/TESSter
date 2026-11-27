@@ -18,7 +18,13 @@ from tesster.sources import (
     CandidateNotFoundError,
     SourceUnavailableError,
 )
-from tesster.sources.exoplanet_archive import CATALOG_NAME, COLUMNS, TAP_URL, ToiCatalog
+from tesster.sources.exoplanet_archive import (
+    CATALOG_NAME,
+    COLUMNS,
+    TAP_URL,
+    ToiCatalog,
+    planet_aliases,
+)
 
 TOI_700 = parse_toi("TOI-700.01")
 TODAY = date(2026, 11, 15)
@@ -181,3 +187,25 @@ def test_tests_cannot_reach_the_archive():
     """The guard in conftest.py: a query without a canned answer fails the test."""
     with pytest.raises(pytest.fail.Exception, match="online archive"):
         ToiCatalog().get_candidate(TOI_700)
+
+
+def test_planet_aliases_match_the_candidate_by_orbital_period():
+    """When a star hosts several confirmed planets, only the one with this candidate's period
+    becomes an alias."""
+    from astropy.table import Table
+
+    planets = Table(
+        rows=[
+            ("TOI-270 b", 3.35992),
+            ("TOI-270 c", 5.66051),
+            ("TOI-270 d", 11.38194),
+        ],
+        names=("pl_name", "pl_orbper"),
+    )
+    row = ROW | {"toi": "270.01", "tid": 259377017, "pl_orbper": 5.6604773}
+    cat = ToiCatalog(answering(row), today=lambda: TODAY, ask_planets=lambda tic_id: planets)
+
+    entry = cat.get_candidate(parse_toi("TOI-270.01"))
+
+    assert entry.aliases == ["TOI-270 c"]
+    assert planet_aliases(planets, 3.36, parse_toi("TOI-270.02")) == ["TOI-270 b"]
