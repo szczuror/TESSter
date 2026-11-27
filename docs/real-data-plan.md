@@ -14,22 +14,28 @@ This plan covers the first project goal: `tesster check` on a real TOI gives a r
 
 | Reference TOI | What it is | Verdict now |
 |---|---|---|
-| TOI-495.01 | known planet WASP-121 b | *false positive* (see the open decision) |
-| TOI-270.01 | confirmed planet TOI-270 c | *inconclusive* (passes odd-even, secondary-eclipse and companion-size; awaits Package A) |
-| TOI-562.01 | confirmed planet GJ 357 b, shallow transit | *inconclusive* (passes odd-even, secondary-eclipse and companion-size; awaits Package A) |
+| TOI-495.01 | known planet WASP-121 b | *false positive* (companion size, secondary eclipse; see the open decisions) |
+| TOI-270.01 | confirmed planet TOI-270 c | *likely planet* |
+| TOI-562.01 | confirmed planet GJ 357 b, shallow transit | *likely planet* |
 | TOI-236.01 | eclipsing binary, object too big | *false positive* (secondary eclipse, companion size) |
 | TOI-1637.01 | eclipsing binary, strong secondary eclipse | *false positive* (secondary eclipse) |
-| TOI-3503.01 | eclipsing binary, odd-even difference | *false positive* (odd-even depth) |
-| TOI-1285.01 | nearby eclipsing binary, clear centroid shift | *inconclusive* (awaits Package A) |
-| TOI-5962.01 | nearby eclipsing binary, two stars in one pixel | *inconclusive* (awaits Package A) |
+| TOI-3503.01 | eclipsing binary, odd-even difference | *false positive* (odd-even depth; centroid unclear) |
+| TOI-1285.01 | nearby eclipsing binary, clear centroid shift | *false positive* (centroid: 19.4 arcsec shift, 7 sigma) |
+| TOI-5962.01 | nearby eclipsing binary, two stars in one pixel | *likely planet* (wrong; see the open decisions) |
 
-The companion-size, odd-even depth and secondary-eclipse tests run on real data, papers are searched on arXiv (using confirmed-planet aliases from the NASA Exoplanet Archive), and saved archive answers for the eight reference candidates are replayed automatically when present. Only nearby stars and centroid measurements (Package A) are still not connected.
+All tests run on real data. Nearby stars come from the TIC, the centroid from SPOC Data Validation reports, papers from arXiv (using confirmed-planet aliases from the NASA Exoplanet Archive), and saved archive answers for the eight reference candidates are replayed automatically when present.
 
-## Open decision
+## Open decisions
 
-The companion-size test rejects the real planet WASP-121 b. The catalog values give 22.7 Earth radii against a limit of 22.4 (two Jupiter radii), and the test ignores measurement errors. The limit is a vetting rule, so the team decides whether the test should take the errors into account.
+These are vetting rules, so the team decides them.
+
+- **Companion size and measurement errors.** The companion-size test rejects the real planet WASP-121 b. The catalog values give 22.7 Earth radii against a limit of 22.4 (two Jupiter radii), and the test ignores measurement errors.
+- **Secondary eclipse of a hot planet.** WASP-121 b also fails the secondary-eclipse test: 349 +/- 25 ppm at phase 0.5. That is the planet's own eclipse (a very hot planet shines in the TESS band), not a second star. The test could compare the depth with the most a planet of that size and temperature can give.
+- **Centroid precision near a close neighbor.** TOI-5962.01 passes the centroid test: shift 2.3 +/- 2.7 arcsec, with stars that could cause the dip 8.8 and 9.6 arcsec away. The precision rule (error below a third of the separation) just accepts it. A stricter rule, for example that the measured position must also be clearly away from the neighbor, would make it *unclear*.
 
 ## Packages
+
+All three packages are done (2026-11-27). The notes below record how they were split.
 
 | | Package | Works after it |
 |---|---|---|

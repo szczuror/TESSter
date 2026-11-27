@@ -185,3 +185,12 @@ def test_saved_reference_candidates_give_expected_check_outcomes(settings):
     verdict_3503, results_3503 = check_map("TOI-3503.01")
     assert verdict_3503 is Verdict.FALSE_POSITIVE
     assert results_3503[Check.ODD_EVEN] is CheckStatus.FAILED
+
+    verdict_1285, results_1285 = check_map("TOI-1285.01")
+    assert verdict_1285 is Verdict.FALSE_POSITIVE
+    assert results_1285[Check.CENTROID] is CheckStatus.FAILED
+
+    for planet in ("TOI-270.01", "TOI-562.01"):
+        verdict, results = check_map(planet)
+        assert verdict is Verdict.LIKELY_PLANET
+        assert results[Check.CENTROID] is CheckStatus.PASSED

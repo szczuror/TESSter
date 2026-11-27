@@ -65,16 +65,479 @@
   ],
   "transit_metrics": {
     "odd_depth_ppm": 3686.2,
-    "odd_depth_err_ppm": 190.7,
+    "odd_depth_err_ppm": 130.7,
     "odd_transits": 7,
     "even_depth_ppm": 3694.5,
-    "even_depth_err_ppm": 267.1,
+    "even_depth_err_ppm": 232.4,
     "even_transits": 8,
     "secondary_depth_ppm": -160.0,
-    "secondary_depth_err_ppm": 95.9,
+    "secondary_depth_err_ppm": 85.6,
     "source": {
       "name": "Light-curve archive (TESS data at MAST)",
       "url": "https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3ATESS%2Fproduct%2Ftess2018263035959-s0003-0000000259377017-0123-s_lc.fits",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  },
+  "stars": [
+    {
+      "tic_id": 685369655,
+      "separation_arcsec": 16.57986089246364,
+      "tmag": 19.5201,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377022,
+      "separation_arcsec": 31.085810922619114,
+      "tmag": 17.5689,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369843,
+      "separation_arcsec": 34.056764204705345,
+      "tmag": 19.0174,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369658,
+      "separation_arcsec": 46.855045430172204,
+      "tmag": 19.2022,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369845,
+      "separation_arcsec": 47.87419565672632,
+      "tmag": 18.3343,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369654,
+      "separation_arcsec": 53.435057776669254,
+      "tmag": 20.0053,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377015,
+      "separation_arcsec": 54.52929527465499,
+      "tmag": 13.9275,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377024,
+      "separation_arcsec": 60.02126020874881,
+      "tmag": 14.8374,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369844,
+      "separation_arcsec": 64.03200048769754,
+      "tmag": 20.0135,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369842,
+      "separation_arcsec": 69.86574772553283,
+      "tmag": 19.9431,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369847,
+      "separation_arcsec": 69.9620277989443,
+      "tmag": 18.8279,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369659,
+      "separation_arcsec": 71.48292070391757,
+      "tmag": 20.0277,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369849,
+      "separation_arcsec": 81.84469910958917,
+      "tmag": 18.5069,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377027,
+      "separation_arcsec": 85.76398536628986,
+      "tmag": 13.1327,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377023,
+      "separation_arcsec": 86.55245137444818,
+      "tmag": 17.15,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 514225878,
+      "separation_arcsec": 88.22655329668375,
+      "tmag": 16.9507,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369653,
+      "separation_arcsec": 91.63179887123873,
+      "tmag": 19.4063,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377030,
+      "separation_arcsec": 93.83397004236119,
+      "tmag": 14.7834,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377029,
+      "separation_arcsec": 99.02005604643473,
+      "tmag": 14.4826,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369848,
+      "separation_arcsec": 104.66421112630368,
+      "tmag": 20.048,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369836,
+      "separation_arcsec": 107.0601261644594,
+      "tmag": 19.4434,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369657,
+      "separation_arcsec": 108.59675851243716,
+      "tmag": 19.5292,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377014,
+      "separation_arcsec": 109.64617441928115,
+      "tmag": 14.3568,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369846,
+      "separation_arcsec": 109.89133084664023,
+      "tmag": 19.5514,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377020,
+      "separation_arcsec": 110.04879550825133,
+      "tmag": 17.1451,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369837,
+      "separation_arcsec": 112.24226323628368,
+      "tmag": 18.7989,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369681,
+      "separation_arcsec": 116.40618770924289,
+      "tmag": 18.5119,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369851,
+      "separation_arcsec": 120.21960111551901,
+      "tmag": 18.2637,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369646,
+      "separation_arcsec": 122.25243802973485,
+      "tmag": 20.2355,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369656,
+      "separation_arcsec": 122.28820471933832,
+      "tmag": 18.8189,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369645,
+      "separation_arcsec": 122.80471853484022,
+      "tmag": 19.2486,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377026,
+      "separation_arcsec": 125.61957794715377,
+      "tmag": 16.9515,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369682,
+      "separation_arcsec": 132.09213782607515,
+      "tmag": 19.0945,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377013,
+      "separation_arcsec": 134.8454026917399,
+      "tmag": 16.1532,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369647,
+      "separation_arcsec": 135.97286961697927,
+      "tmag": 19.9696,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369642,
+      "separation_arcsec": 136.56419489102237,
+      "tmag": 20.5894,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369652,
+      "separation_arcsec": 139.24438276053087,
+      "tmag": 18.8316,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369644,
+      "separation_arcsec": 139.46317483312617,
+      "tmag": 19.1137,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377018,
+      "separation_arcsec": 140.1021664199472,
+      "tmag": 15.5595,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 259377028,
+      "separation_arcsec": 143.18417327349798,
+      "tmag": 18.3104,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    },
+    {
+      "tic_id": 685369850,
+      "separation_arcsec": 149.68542864603265,
+      "tmag": 18.6678,
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A68.41608%2C%22dec%22%3A-51.957394%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      }
+    }
+  ],
+  "centroid": {
+    "offset_arcsec": 0.5385281,
+    "offset_err_arcsec": 2.7069771,
+    "source": {
+      "name": "Light-curve archive (TESS data at MAST)",
+      "url": "https://mast.stsci.edu/api/v0.1/Download/file?uri=mast:TESS/product/tess2018206190142-s0001-s0036-0000000259377017-00471_dvr.xml",
       "retrieved": "2026-11-27",
       "placeholder": false
     }
