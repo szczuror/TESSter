@@ -205,3 +205,30 @@ def test_network_error_from_mast_is_reported_as_unavailable():
     archive = MastLightCurves(ask_uris=fail)
     with pytest.raises(SourceUnavailableError, match="MAST timeout"):
         archive.transit_metrics(make_entry())
+
+
+def noisy_light_curve(seed: int, *, noise_ppm: float = 400.0, **signal) -> LightCurve:
+    """``synthetic_light_curve`` with its own noise draw and matching archive flux errors."""
+    clean = synthetic_light_curve(noise_ppm=0.0, **signal)
+    rng = np.random.default_rng(seed)
+    flux = clean.flux + rng.normal(0.0, noise_ppm / 1e6, size=len(clean.time))
+    return LightCurve(time=clean.time, flux=flux, flux_err=np.full_like(flux, noise_ppm / 1e6))
+
+
+def test_depth_errors_match_the_real_scatter_of_the_measurements():
+    # With equal odd and even depths and no secondary eclipse, the measured differences divided
+    # by their errors should scatter by about 1. Errors that count the same noise twice give
+    # about 0.7, so real odd-even differences and secondary eclipses would be missed.
+    odd_even_pulls, secondary_pulls = [], []
+    for seed in range(40):
+        lc = noisy_light_curve(seed, odd_depth_ppm=2000.0, even_depth_ppm=2000.0)
+        metrics = measure_transits(
+            lc, period_days=3.0, epoch_btjd=2000.0, duration_hours=2.4, source=SOURCE
+        )
+        assert metrics is not None
+        difference_err = np.hypot(metrics.odd_depth_err_ppm, metrics.even_depth_err_ppm)
+        odd_even_pulls.append((metrics.odd_depth_ppm - metrics.even_depth_ppm) / difference_err)
+        secondary_pulls.append(metrics.secondary_depth_ppm / metrics.secondary_depth_err_ppm)
+
+    assert 0.75 <= np.std(odd_even_pulls) <= 1.25
+    assert 0.75 <= np.std(secondary_pulls) <= 1.25

@@ -37,6 +37,9 @@ MAX_SECTORS = 4
 GAP_SPLIT_DAYS = 0.5
 """Time gap that starts a new continuous light-curve segment when removing trends."""
 
+MEDIAN_VARIANCE_FACTOR = math.pi / 2
+"""How much more the median of Gaussian samples varies than their mean (large-sample limit)."""
+
 
 @dataclass(frozen=True)
 class LightCurve:
@@ -205,22 +208,33 @@ def _window_depth_and_variance(
         base = 1.0
     dip = float(np.median(f_in))
     depth_ppm = (base - dip) / base * 1e6
-
-    n_in, n_out = len(f_in), len(f_out)
-    var_in = float(np.sum(e_in**2)) / (n_in**2) + (
-        float(np.var(f_in, ddof=1)) / n_in if n_in > 1 else 0.0
-    )
-    var_out = float(np.sum(e_out**2)) / (n_out**2) + (
-        float(np.var(f_out, ddof=1)) / n_out if n_out > 1 else 0.0
-    )
-    var_ppm = (var_in + var_out) / (base**2) * 1e12
+    var_ppm = (_median_variance(f_in, e_in) + _median_variance(f_out, e_out)) / (base**2) * 1e12
     return depth_ppm, var_ppm
+
+
+def _median_variance(flux: np.ndarray, flux_err: np.ndarray) -> float:
+    """Variance of the median of ``flux``.
+
+    The noise is estimated once: from the archive's flux errors or from the scatter of the points,
+    whichever is larger, so underestimated archive errors or extra noise are not missed. Adding
+    the two would count the same noise twice and let real odd-even differences and secondary
+    eclipses pass (FR-06). The median of ``n`` points with Gaussian noise varies ``pi / 2`` times
+    more than their mean.
+    """
+    n = len(flux)
+    propagated = float(np.sum(flux_err**2)) / n**2
+    scatter = float(np.var(flux, ddof=1)) / n if n > 1 else 0.0
+    return MEDIAN_VARIANCE_FACTOR * max(propagated, scatter)
 
 
 def _combine_transits(
     depths: Sequence[float], variances: Sequence[float]
 ) -> tuple[float, float, int]:
-    """Mean depth, standard error in ppm and transit count across individual transits."""
+    """Mean depth, standard error in ppm and transit count across individual transits.
+
+    The error is the one from the single-transit errors or from the scatter between transits,
+    whichever is larger. They measure the same noise, so they are not added.
+    """
     n = len(depths)
     if n == 0:
         return 0.0, 0.0, 0
@@ -229,7 +243,7 @@ def _combine_transits(
     mean_depth = float(np.mean(arr))
     err_prop = math.sqrt(float(np.sum(var_arr))) / n
     err_scatter = float(np.std(arr, ddof=1)) / math.sqrt(n) if n > 1 else 0.0
-    return mean_depth, math.hypot(err_prop, err_scatter), n
+    return mean_depth, max(err_prop, err_scatter), n
 
 
 def mast_download_link(uri: str) -> str:
