@@ -26,7 +26,7 @@ In the rest of this document, *user* means either kind of user. Links to the ext
 
 | ID | Use case | Primary actor | Priority | Requirements |
 |---|---|---|---|---|
-| [UC-01](#uc-01-verify-a-candidate) | Verify a candidate | User | Must | FR-01 - FR-14 |
+| [UC-01](#uc-01-verify-a-candidate) | Verify a candidate | User | Must | FR-01 - FR-14, FR-17, FR-18 |
 | [UC-02](#uc-02-ask-about-a-report) | Ask about a report | User | Should | FR-15 |
 | [UC-03](#uc-03-verify-several-candidates) | Verify several candidates | User | Could | FR-16 |
 
@@ -94,7 +94,7 @@ The user gives a candidate's TOI number. The system checks catalogs and papers, 
 | 4 | System | Looks for stars within 2.5 arcminutes of the target that are bright enough that eclipsing one of them completely would produce the dip, and finds none. | FR-07 |
 | 5 | System | Runs the tests that fit the candidate. It always checks whether the dip could come from two stars eclipsing each other. For each test it records why it was run or skipped. | FR-06, FR-08 |
 | 6 | System | Marks each test that was run as *passed* (fits a planet), *failed* (points to a false positive) or *unclear*. | FR-09 |
-| 7 | System | Every needed test passed, so the verdict is *likely planet*. The system states the main reason in one sentence. | FR-10, FR-11 |
+| 7 | System | Weighs the test results. Every needed test passed, so the verdict is *likely planet*. The system states the main reason in one sentence. | FR-10, FR-11, FR-17 |
 | 8 | System | Shows the report: disposition, papers, tests run and skipped with reasons and results, the verdict with its main reason, and links to every outside source. | FR-08, FR-09, FR-10, FR-14 |
 
 After step 8 the user can ask about the report ([UC-02](#uc-02-ask-about-a-report)).
@@ -131,12 +131,16 @@ This behavior is provisional until the [open question](requirements.md#open-ques
 1. If the data are missing, the system skips the test. If they are too poor, it marks the test as *unclear*. Either way it records the reason. (FR-02, FR-08, FR-09)
 2. The use case continues. If a needed test gives no result, the verdict is *inconclusive* (see 7b).
 
+#### 6a. Some results are unclear or contradict each other
+1. The system runs further tests that could settle them, and records why each one was run. (FR-08, FR-18)
+2. The use case continues at step 7.
+
 #### 7a. At least one test failed
-1. The verdict is *false positive*.
-2. The report names the likely cause, e.g. two eclipsing stars or a nearby star. (FR-11, FR-12)
+1. If the failure is strong, the verdict is *false positive*. If it is weak, e.g. just above a limit and within the measurement errors, the system may overrule it, and the report says why. (FR-11, FR-17)
+2. For a *false positive*, the report names the likely cause, e.g. two eclipsing stars or a nearby star. (FR-12)
 
 #### 7b. No test failed, but not every needed test passed
-1. The verdict is *inconclusive*.
+1. The verdict is *inconclusive*, unless further tests settle the question (6a).
 2. The report names the observation or data that would settle it, e.g. high-resolution imaging from the ground. (FR-11, FR-13)
 
 ---
