@@ -62,8 +62,7 @@ class SavedSources:
         raw = self._saved(candidate.toi)
         if raw is not None and "stars" in raw:
             limit_arcsec = radius_arcmin * 60.0
-            stars = (NearbyStar.model_validate(s) for s in raw["stars"])
-            return [s for s in stars if s.separation_arcsec <= limit_arcsec]
+            return [s for s in _unpack_stars(raw["stars"]) if s.separation_arcsec <= limit_arcsec]
         return self._inner.stars.stars_near(candidate, radius_arcmin)
 
     def transit_metrics(self, candidate: CatalogEntry) -> TransitMetrics | None:
@@ -126,7 +125,7 @@ def save_candidate(
     except SourceNotConnectedError:
         pass
     else:
-        data["stars"] = [s.model_dump(mode="json") for s in stars]
+        data["stars"] = _pack_stars(stars)
 
     try:
         metrics = sources.light_curves.transit_metrics(entry)
@@ -142,5 +141,54 @@ def save_candidate(
     else:
         data["centroid"] = None if centroid is None else centroid.model_dump(mode="json")
 
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    path.write_text(_to_json(data), encoding="utf-8")
     return path
+
+
+def _pack_stars(stars: Sequence[NearbyStar]) -> list[dict[str, Any]]:
+    """Nearby stars grouped by source, one ``[tic_id, separation_arcsec, tmag]`` row per star.
+
+    A crowded field has over a thousand stars from one cone search, so writing the source once
+    keeps the saved file small.
+    """
+    groups: dict[str, dict[str, Any]] = {}
+    for star in stars:
+        source = star.source.model_dump(mode="json")
+        key = json.dumps(source, sort_keys=True)
+        group = groups.setdefault(key, {"source": source, "rows": []})
+        group["rows"].append([star.tic_id, star.separation_arcsec, star.tmag])
+    return list(groups.values())
+
+
+def _unpack_stars(groups: list[dict[str, Any]]) -> list[NearbyStar]:
+    return [
+        NearbyStar(tic_id=tic_id, separation_arcsec=separation, tmag=tmag, source=group["source"])
+        for group in groups
+        for tic_id, separation, tmag in group["rows"]
+    ]
+
+
+def _to_json(data: dict[str, Any]) -> str:
+    """Indented JSON with every list of plain values (such as a star row) on one line."""
+    return _dump(data, 0) + "\n"
+
+
+def _dump(value: Any, level: int) -> str:
+    def plain(item: Any) -> bool:
+        return not isinstance(item, dict | list)
+
+    if isinstance(value, list) and all(plain(item) for item in value):
+        return json.dumps(value, ensure_ascii=False)
+    if not isinstance(value, dict | list) or not value:
+        return json.dumps(value, ensure_ascii=False)
+    inner = "  " * (level + 1)
+    if isinstance(value, dict):
+        items = [
+            f"{inner}{json.dumps(k, ensure_ascii=False)}: {_dump(v, level + 1)}"
+            for k, v in value.items()
+        ]
+        opening, closing = "{", "}"
+    else:
+        items = [f"{inner}{_dump(v, level + 1)}" for v in value]
+        opening, closing = "[", "]"
+    return opening + "\n" + ",\n".join(items) + "\n" + "  " * level + closing

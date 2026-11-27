@@ -1,5 +1,6 @@
 """Saved archive data: saving what connected sources return and replaying it without the network."""
 
+import json
 from datetime import date
 
 import pytest
@@ -115,6 +116,19 @@ def test_saved_candidate_is_replayed_without_calling_the_inner_sources(tmp_path)
     assert replayed.light_curves.centroid(entry) == live.centroid_shift
 
 
+def test_saved_stars_take_one_line_each_and_share_their_source(tmp_path):
+    """A crowded field has over a thousand nearby stars, so the saved file stays small."""
+    live = RecordingSources()
+    text = save_candidate(TOI, live.as_data_sources(), tmp_path).read_text(encoding="utf-8")
+
+    for star in (live.star, live.distant_star):
+        row = f"[{star.tic_id}, {star.separation_arcsec}, {star.tmag}]"
+        assert sum(row in line for line in text.splitlines()) == 1
+    groups = json.loads(text)["stars"]
+    assert len(groups) == 1
+    assert len(groups[0]["rows"]) == 2
+
+
 def test_unsaved_candidate_falls_through_to_the_inner_sources(tmp_path):
     live = RecordingSources()
     replayed = use_saved(live.as_data_sources(), tmp_path)
@@ -185,3 +199,12 @@ def test_saved_reference_candidates_give_expected_check_outcomes(settings):
     verdict_3503, results_3503 = check_map("TOI-3503.01")
     assert verdict_3503 is Verdict.FALSE_POSITIVE
     assert results_3503[Check.ODD_EVEN] is CheckStatus.FAILED
+
+    verdict_1285, results_1285 = check_map("TOI-1285.01")
+    assert verdict_1285 is Verdict.FALSE_POSITIVE
+    assert results_1285[Check.CENTROID] is CheckStatus.FAILED
+
+    for planet in ("TOI-270.01", "TOI-562.01"):
+        verdict, results = check_map(planet)
+        assert verdict is Verdict.LIKELY_PLANET
+        assert results[Check.CENTROID] is CheckStatus.PASSED

@@ -331,8 +331,8 @@ def concat_light_curves(curves: Sequence[LightCurve]) -> LightCurve:
 class MastLightCurves:
     """Implements LightCurveArchive for transit measurements from MAST, caching per candidate.
 
-    Centroid measurements belong to Package A and are delegated to ``centroids`` (which defaults
-    to ``NotConnected`` until Package A is plugged in).
+    Centroid measurements are passed to ``centroids``: ``SpocCentroidArchive`` in
+    ``build_sources()``, ``NotConnected`` when none is given.
     """
 
     def __init__(

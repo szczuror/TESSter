@@ -63,6 +63,7 @@ class NeighborsForAgent(BaseModel):
     target_tmag: float
     dip_depth_ppm: float
     stars: list[NeighborForAgent] | None
+    fainter_stars_count: int = 0
     centroid_test_must_come_first: bool
     note: str
 
@@ -154,6 +155,8 @@ def find_nearby_stars(ctx: RunContext[VerifierDeps]) -> NeighborsForAgent:
         note = "At least one star could cause the dip: run the centroid test first."
     else:
         note = "No star nearby is bright enough to cause the dip."
+    bright = inv.bright_neighbors if neighbors is not None else []
+    fainter_count = len(neighbors) - len(bright) if neighbors is not None else 0
     return NeighborsForAgent(
         search_radius_arcmin=NEARBY_RADIUS_ARCMIN,
         target_tmag=entry.tmag,
@@ -168,8 +171,9 @@ def find_nearby_stars(ctx: RunContext[VerifierDeps]) -> NeighborsForAgent:
                 max_depth_if_fully_eclipsed_ppm=round(n.max_depth_ppm),
                 could_cause_dip=n.could_cause_dip,
             )
-            for n in neighbors
+            for n in bright
         ],
+        fainter_stars_count=fainter_count,
         centroid_test_must_come_first=must_come_first,
         note=note,
     )

@@ -1,5 +1,7 @@
 import pytest
+from astropy.table import Table
 from astroquery.ipac.nexsci.nasa_exoplanet_archive import NasaExoplanetArchive
+from astroquery.mast import Catalogs, Observations
 from helpers import TOI_700_ROW, toi_table
 from typer.testing import CliRunner
 
@@ -26,14 +28,15 @@ def placeholder_data(monkeypatch):
 
 
 def archive_answers(monkeypatch, *rows: dict) -> None:
-    """Use the real sources, with the archive behind astroquery answering with these rows."""
+    """Use the real sources, with the archives behind astroquery answering with canned rows."""
     monkeypatch.setattr("tesster.cli.build_sources", lambda: build_sources(saved_dir=None))
     monkeypatch.setattr(NasaExoplanetArchive, "query_criteria", lambda **criteria: toi_table(*rows))
     monkeypatch.setattr(
         "tesster.sources.papers.ask_arxiv",
         lambda query: '<feed xmlns="http://www.w3.org/2005/Atom"/>',
     )
-    monkeypatch.setattr("tesster.sources.light_curves.ask_mast_uris", lambda tic_id: [])
+    monkeypatch.setattr(Catalogs, "query_region", lambda *args, **kwargs: Table())
+    monkeypatch.setattr(Observations, "query_criteria", lambda **kwargs: Table())
 
 
 def test_check_reads_the_online_archives_without_any_flag(monkeypatch, tmp_path):

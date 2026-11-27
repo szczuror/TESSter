@@ -26,16 +26,60 @@
   "papers": [],
   "transit_metrics": {
     "odd_depth_ppm": 21995.6,
-    "odd_depth_err_ppm": 294.7,
+    "odd_depth_err_ppm": 236.8,
     "odd_transits": 11,
     "even_depth_ppm": 21716.4,
-    "even_depth_err_ppm": 424.5,
+    "even_depth_err_ppm": 386.8,
     "even_transits": 11,
     "secondary_depth_ppm": 1107.7,
-    "secondary_depth_err_ppm": 81.4,
+    "secondary_depth_err_ppm": 73.7,
     "source": {
       "name": "Light-curve archive (TESS data at MAST)",
       "url": "https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3ATESS%2Fproduct%2Ftess2018234235059-s0002-0000000009727392-0121-s_lc.fits",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  },
+  "stars": [
+    {
+      "source": {
+        "name": "Star catalog (TIC at MAST)",
+        "url": "https://mast.stsci.edu/api/v0/invoke?request=%7B%22service%22%3A%22Mast.Catalogs.Tic.Cone%22%2C%22params%22%3A%7B%22ra%22%3A358.444734%2C%22dec%22%3A-10.884958%2C%22radius%22%3A0.041667%7D%2C%22format%22%3A%22json%22%2C%22pagesize%22%3A2000%2C%22page%22%3A1%7D",
+        "retrieved": "2026-11-27",
+        "placeholder": false
+      },
+      "rows": [
+        [9727393, 25.650815841226635, 15.3492],
+        [9727391, 48.92450510497486, 18.1521],
+        [9727396, 57.040210189904315, 13.5322],
+        [2052376544, 59.89830260270843, 19.9739],
+        [2052376547, 62.34748850770181, 19.8289],
+        [2052376541, 66.20968117918473, 18.8985],
+        [9727397, 67.09323130955948, 18.677],
+        [9727385, 82.23742605439541, 17.683],
+        [2052376539, 85.34521094314073, 18.9469],
+        [9727384, 96.389819802146, 19.0656],
+        [9727398, 102.02823906791848, 17.6927],
+        [2052376546, 106.2450575999134, 19.9439],
+        [10000210836, 107.05992722376796, 17.116],
+        [9727400, 122.3777451421658, 17.3236],
+        [9727382, 124.03920948825946, 18.9801],
+        [9727390, 129.4894706791758, 18.1796],
+        [9727399, 132.54392657642703, 18.3345],
+        [9727380, 132.7570383431118, 19.5052],
+        [2052376540, 134.66371146946034, 19.9502],
+        [2052376545, 135.96466853135072, 20.0524],
+        [9725468, 139.79907126605636, 17.1304],
+        [9725461, 142.00011790388345, 17.8604]
+      ]
+    }
+  ],
+  "centroid": {
+    "offset_arcsec": 0.21684629,
+    "offset_err_arcsec": 2.5014343,
+    "source": {
+      "name": "Light-curve archive (TESS data at MAST)",
+      "url": "https://mast.stsci.edu/api/v0.1/Download/file?uri=mast:TESS/product/tess2018235142541-s0002-s0072-0000000009727392-00829_dvr.xml",
       "retrieved": "2026-11-27",
       "placeholder": false
     }
