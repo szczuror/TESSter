@@ -10,6 +10,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "astroquery>=0.4.11",
     "pydantic-ai-slim[anthropic,google,openai]>=2.66.0",
     "pydantic-settings>=2.16.2",
     "python-dotenv>=1.2.4",

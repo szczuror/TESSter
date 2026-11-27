@@ -29,7 +29,12 @@ from tesster.models import (
     Verdict,
     parse_toi,
 )
-from tesster.sources import CandidateNotFoundError, DataSources, SourceUnavailableError
+from tesster.sources import (
+    CandidateIncompleteError,
+    CandidateNotFoundError,
+    DataSources,
+    SourceUnavailableError,
+)
 from tesster.vetting.registry import SPECS, spec_for
 from tesster.vetting.verdict import Decision
 
@@ -59,7 +64,8 @@ def check_candidate(
     inv = Investigation(toi=toi, blind=blind)
     try:
         steps.load_candidate(inv, sources)
-    except (CandidateNotFoundError, SourceUnavailableError) as exc:
+    except (CandidateNotFoundError, CandidateIncompleteError, SourceUnavailableError) as exc:
+        # FR-02: the reason says what is missing.
         return NotChecked(input=str(toi), reason=str(exc))
 
     checked_with, agent_reason, usage = _orchestrate(inv, sources, settings, offline=offline)

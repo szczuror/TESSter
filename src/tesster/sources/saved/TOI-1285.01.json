@@ -1,0 +1,43 @@
+{
+  "candidate": {
+    "toi": {
+      "star": 1285,
+      "candidate": 1
+    },
+    "tic_id": 274662200,
+    "tmag": 10.9313,
+    "ra_deg": 316.86724,
+    "dec_deg": 46.865373,
+    "period_days": 1.2292558,
+    "epoch_btjd": 1712.357228,
+    "duration_hours": 1.6084721,
+    "depth_ppm": 1194.4742438,
+    "stellar_radius_rsun": 0.53023,
+    "disposition": "FP",
+    "disposition_date": "2026-09-18",
+    "aliases": [],
+    "source": {
+      "name": "NASA Exoplanet Archive, TOI table",
+      "url": "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+toi%2Ctid%2Ctfopwg_disp%2Cst_tmag%2Cra%2Cdec%2Cpl_orbper%2Cpl_tranmid%2Cpl_trandurh%2Cpl_trandep%2Cst_rad%2Crowupdate+from+toi+where+toi%3D1285.01&format=json",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  },
+  "papers": [],
+  "transit_metrics": {
+    "odd_depth_ppm": 1077.5,
+    "odd_depth_err_ppm": 140.9,
+    "odd_transits": 36,
+    "even_depth_ppm": 1230.8,
+    "even_depth_err_ppm": 133.2,
+    "even_transits": 39,
+    "secondary_depth_ppm": 128.1,
+    "secondary_depth_err_ppm": 70.4,
+    "source": {
+      "name": "Light-curve archive (TESS data at MAST)",
+      "url": "https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3ATESS%2Fproduct%2Ftess2019226182529-s0015-0000000274662200-0151-s_lc.fits",
+      "retrieved": "2026-11-27",
+      "placeholder": false
+    }
+  }
+}

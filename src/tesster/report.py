@@ -47,9 +47,10 @@ def render_report(report: Report) -> str:
 
     out += ["## Candidate", ""]
     if c.disposition is not None:
+        updated = f", catalog entry last updated {c.disposition_date}" if c.disposition_date else ""
         out.append(
-            f"- Catalog status: {c.disposition.label} ({c.disposition.value}), "
-            f"as of {c.disposition_date}. Source: {link(c.source)}"
+            f"- Catalog status: {c.disposition.label} ({c.disposition.value}){updated}. "
+            f"Source: {link(c.source)}"
         )
     elif report.blind:
         out.append("- Catalog status: hidden (blind test)")
@@ -83,7 +84,7 @@ def render_report(report: Report) -> str:
 
     out += [f"## Nearby stars (within {NEARBY_RADIUS_ARCMIN} arcmin)", ""]
     if report.neighbors is None:
-        out.append("The star catalog could not be reached (see Problems).")
+        out.append("The star catalog was not available (see Problems).")
     elif not report.neighbors:
         out.append("No stars found.")
     else:

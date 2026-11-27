@@ -1,6 +1,7 @@
 """The agent's tools and rules, driven by a scripted fake model (no network, no API key)."""
 
 import pytest
+from helpers import catalog_only, make_entry
 from pydantic_ai import ModelAuthenticationError, UnexpectedModelBehavior
 from pydantic_ai.messages import ModelMessage, ModelResponse, TextPart, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
@@ -204,6 +205,27 @@ def test_agent_is_asked_to_name_every_failed_test(sources, settings):
     assert "Secondary eclipse test" in script.sent_text()  # names a student can read, not ids
     assert report.verdict is Verdict.FALSE_POSITIVE
     assert report.main_reason == sentence
+
+
+def test_agent_is_told_when_a_source_is_not_available(settings):
+    sentence = "The tests that need the light curve could not run, so nothing is settled yet."
+    script = Script(
+        [("search_papers", {})],
+        [("find_nearby_stars", {})],
+        [call("centroid", "The star catalog is missing, so a bright star nearby is possible.")],
+        [call("odd_even_depth"), call("secondary_eclipse"), call("companion_size")],
+        [("get_verdict", {})],
+        sentence,
+    )
+    report = run_agent(script, "TOI-1234.01", catalog_only(make_entry()), settings)
+
+    sent = script.sent_text()
+    assert "The paper archive is not available, so no papers can be listed." in sent
+    assert "The star catalog is not available, so the centroid test is required." in sent
+    assert "is not connected in this version of TESSter yet, so the test could not run" in sent
+    assert report.verdict is Verdict.INCONCLUSIVE
+    assert report.main_reason == sentence
+    assert not any(r.auto_run for r in report.checks)
 
 
 def test_required_test_cannot_be_skipped(sources, settings):
