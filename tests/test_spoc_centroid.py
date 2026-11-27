@@ -188,3 +188,26 @@ def test_archive_problems_are_reported_as_unavailable(monkeypatch, error, detail
     with pytest.raises(SourceUnavailableError, match=detail) as raised:
         SpocCentroidArchive().centroid(make_entry())
     assert raised.value.source == LIGHT_CURVE_ARCHIVE_NAME
+
+
+def test_lone_dv_result_with_a_different_period_is_not_used():
+    """A lone DV result whose period does not match is another signal, not this candidate."""
+    archive = SpocCentroidArchive(
+        list_uris=lambda tic_id: [SAMPLE_URI],
+        fetch_xml=lambda uri: dvr_xml(toi_id=None, period_days=11.3, offset=4.0, uncertainty=0.8),
+    )
+    entry = make_entry(toi=parse_toi("TOI-1285.01"), period_days=2.1)
+
+    assert archive.centroid(entry) is None
+
+
+def test_lone_dv_result_without_a_period_is_used():
+    xml = dvr_xml(toi_id=None, offset=0.9, uncertainty=2.1).replace(
+        '<planetCandidate orbitalPeriodInDays="1.2293" />', ""
+    )
+    archive = SpocCentroidArchive(list_uris=lambda tic_id: [SAMPLE_URI], fetch_xml=lambda uri: xml)
+
+    measurement = archive.centroid(make_entry(period_days=2.1))
+
+    assert measurement is not None
+    assert measurement.offset_arcsec == 0.9

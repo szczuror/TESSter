@@ -205,7 +205,10 @@ def _match_planet_results(
         scored.sort(key=lambda item: item[0])
         return scored[0][1]
 
-    if len(planet_results) == 1:
+    # A lone result is used only when its period cannot be read. A lone result with a known
+    # period that does not match is a different signal, and its offset says nothing about
+    # this candidate (FR-07).
+    if len(planet_results) == 1 and _planet_result_period(planet_results[0]) is None:
         return planet_results[0]
     return None
 
