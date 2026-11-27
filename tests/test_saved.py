@@ -1,5 +1,6 @@
 """Saved archive data: saving what connected sources return and replaying it without the network."""
 
+import json
 from datetime import date
 
 import pytest
@@ -113,6 +114,19 @@ def test_saved_candidate_is_replayed_without_calling_the_inner_sources(tmp_path)
     assert replayed.stars.stars_near(entry, 1.0) == [live.star]
     assert replayed.light_curves.transit_metrics(entry) == live.metrics
     assert replayed.light_curves.centroid(entry) == live.centroid_shift
+
+
+def test_saved_stars_take_one_line_each_and_share_their_source(tmp_path):
+    """A crowded field has over a thousand nearby stars, so the saved file stays small."""
+    live = RecordingSources()
+    text = save_candidate(TOI, live.as_data_sources(), tmp_path).read_text(encoding="utf-8")
+
+    for star in (live.star, live.distant_star):
+        row = f"[{star.tic_id}, {star.separation_arcsec}, {star.tmag}]"
+        assert sum(row in line for line in text.splitlines()) == 1
+    groups = json.loads(text)["stars"]
+    assert len(groups) == 1
+    assert len(groups[0]["rows"]) == 2
 
 
 def test_unsaved_candidate_falls_through_to_the_inner_sources(tmp_path):
