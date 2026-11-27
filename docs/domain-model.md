@@ -14,9 +14,9 @@ The domain model names the concepts TESSter works with and how they relate. It f
 | Neighbour | A star near the target, with its distance and whether it is bright enough to cause the dip on its own. | FR-07 |
 | Light curve | A record of the target star's brightness over time, from which the tests measure the dips. | UC-01 step 5 |
 | Verification test | A kind of check for a false positive (centroid, odd-even depth, secondary eclipse, companion size): what it looks for, the cause it points to and what would settle it. | FR-06, FR-12, FR-13 |
-| Test result | The outcome of one test for one candidate: *passed*, *failed*, *unclear* or *skipped*, with the reason and what was found. | FR-08, FR-09 |
+| Test result | The outcome of one test for one candidate: *passed*, *failed*, *unclear* or *skipped*, with the reason and what was found. A failure is weak or strong, and the agent may overrule a weak one. | FR-08, FR-09, FR-17 |
 | Report | Everything the user gets from one check of a candidate, including exactly one verdict with its main reason. | FR-10, UC-01 step 8 |
-| Verdict | *Likely planet*, *false positive* or *inconclusive*. The agent gives it from the test results, and the fixed rule gives a second verdict to compare with. | FR-10, FR-11 |
+| Verdict | *Likely planet*, *false positive* or *inconclusive*. The agent gives it from the test results, with its confidence, within the limits of FR-17. The fixed rule gives a reference verdict to compare with. | FR-10, FR-11, FR-17 |
 | Source | Where a fact comes from: archive name, link and date. | FR-14 |
 | Follow-up question | A question the user asks about a report, with the answer. | FR-15, UC-02 |
 | Batch | Several candidates checked at once, listed with *likely planet* first. | FR-16, UC-03 |
@@ -77,12 +77,15 @@ class VerificationTest {
   settledBy : String
   weight : Weight
   requiredWhen : String
+  strongWhen : String
 }
 
 class TestResult {
   outcome : TestOutcome
   reason : String
   finding : String
+  failure : FailureStrength [0..1]
+  overruledBecause : String [0..1]
 }
 
 class Report {
@@ -91,6 +94,7 @@ class Report {
   papersSearched : Boolean
   neighboursSearched : Boolean
   verdict : Verdict
+  confidence : Confidence [0..1]
   /ruleVerdict : Verdict
   mainReason : String
   cause : String [0..1]
@@ -152,6 +156,17 @@ enum Weight {
   supporting
 }
 
+enum FailureStrength {
+  weak
+  strong
+}
+
+enum Confidence {
+  low
+  medium
+  high
+}
+
 Star "1" -- "1..*" Candidate : hosts >
 Candidate "1" -- "0..1" CatalogStatus : listed as >
 Star "1" -- "0..*" LightCurve : observed in >
@@ -188,7 +203,7 @@ The left part of the diagram is what the archives already know: a star hosts one
 
 ## Design decisions
 
-Each decision gives the problem, the options we considered, what we chose and what follows from it. D1 describes where we are going: today's code still computes the verdict with the fixed rule alone, and FR-11 will be rewritten when the agent's verdict is added.
+Each decision gives the problem, the options we considered, what we chose and what follows from it. D1 describes where we are going, as proposed in [the agent's role](agent-role.md): today's code still computes the verdict with the fixed rule alone.
 
 ### D1. The agent gives the verdict, within limits that code enforces
 
@@ -201,11 +216,12 @@ Each decision gives the problem, the options we considered, what we chose and wh
 | The agent decides freely | Can weigh evidence and explain it | May change between runs or rely on the catalog and papers instead of the tests |
 | **The agent decides, code sets the limits** | Weighs evidence; the rule keeps it in check | Two verdicts to compare and explain |
 
-- **Decision:** the agent gives `verdict` from the test results. Code rejects a verdict that breaks the limits, for example *likely planet* while a decisive test has failed, and the verdict may never rest on the catalog status or on papers. The fixed rule still computes `/ruleVerdict`. It is the reference, and the fallback when the agent gives no valid verdict.
+- **Decision:** the agent gives `verdict` and `confidence` from the test results. Code checks the limits of FR-17: the verdict comes after every required test has a result and never rests on the catalog status or on papers; it may overrule a weak failure, with the reason in `overruledBecause`, but not a strong one; and a *false positive* names a failed test. A verdict that breaks a limit gets a correction. The fixed rule still computes `/ruleVerdict`. It is the reference, and the fallback when the agent gives no valid verdict.
 - **Consequences:**
   - The report shows both verdicts when they differ, so the user can see where the agent went beyond the rule.
   - Comparing the two verdicts on the test set tells us how much freedom the agent keeps. NFR-03 must still hold.
-  - FR-11, and the sentences in the README that say code computes the verdict, have to be rewritten.
+  - Each test has to say where a weak failure ends and a strong one begins (`strongWhen`).
+  - FR-11 is rewritten and FR-17 added. The README still says that code computes the verdict; it changes together with the code.
 
 ### D2. A test is described once, apart from its results
 
@@ -217,10 +233,10 @@ Each decision gives the problem, the options we considered, what we chose and wh
 | Only a list of test names | Simplest | The same texts are written in many places and drift apart |
 | **`VerificationTest` describes the test, `TestResult` records one run** | One place per test; adding a test adds one description | Values of a single test are not typed attributes |
 
-- **Decision:** `VerificationTest` holds what does not change between candidates: name, what it looks for, likely cause, what would settle it, when it is required and its weight. `TestResult` holds what one run found and points to its test.
+- **Decision:** `VerificationTest` holds what does not change between candidates: name, what it looks for, likely cause, what would settle it, when it is required, when its failure is strong, and its weight. `TestResult` holds what one run found and points to its test.
 - **Consequences:**
   - The agent, the fixed rule and the report all read the same description.
-  - A new test starts as *supporting*: it is shown in the report, but it cannot change the verdict until we trust it.
+  - A new test starts as *supporting*: the fixed rule ignores it until we trust it, but the agent can already weigh it (FR-18).
   - Values such as how far the centroid moved are described in `finding` and not modelled separately.
 
 ### D3. Missing data is written down, never shown as a fact
